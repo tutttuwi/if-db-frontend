@@ -7,42 +7,315 @@ import cola from 'cytoscape-cola'
 import Link from 'next/link'
 cys.use(cola)
 
+const node = [
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f87f'
+    },
+    id: 's1',
+    label: 'uketsuke',
+    parent: '',
+    type: 'system',
+    description: '受付システム'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f880'
+    },
+    id: 's2',
+    label: 'api',
+    parent: '',
+    type: 'system',
+    description: 'API'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f881'
+    },
+    id: 's3',
+    label: 'kikan',
+    parent: '',
+    type: 'system',
+    description: '基幹処理'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f882'
+    },
+    id: 's4',
+    label: 'subsys',
+    parent: '',
+    type: 'system',
+    description: 'サブシステム処理'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f883'
+    },
+    id: 'a1',
+    label: 'customer-web',
+    parent: 's1',
+    type: 'web',
+    description: '顧客用画面'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f884'
+    },
+    id: 'a2',
+    label: 'tempo-web',
+    parent: 's1',
+    type: 'web',
+    description: '店舗用画面'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f885'
+    },
+    id: 'a3',
+    label: 'app-web',
+    parent: 's1',
+    type: 'web',
+    description: 'アプリ画面'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f886'
+    },
+    id: 'a4',
+    label: 'com-api',
+    parent: 's2',
+    type: 'api',
+    description: '共通API'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f887'
+    },
+    id: 'a5',
+    label: 'sys-api',
+    parent: 's2',
+    type: 'api',
+    description: 'システムAPI'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f888'
+    },
+    id: 'a6',
+    label: 'tasha-api',
+    parent: 's2',
+    type: 'api',
+    description: '他社連携API'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f889'
+    },
+    id: 'a7',
+    label: 'flow',
+    parent: 's3',
+    type: 'batch',
+    description: 'フロー制御'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f88a'
+    },
+    id: 'a8',
+    label: 'db',
+    parent: 's3',
+    type: 'db',
+    description: 'データベース'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f88b'
+    },
+    id: 'a9',
+    label: 'db-2',
+    parent: 's3',
+    type: 'db',
+    description: 'データベース２'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f88c'
+    },
+    id: 'a10',
+    label: 'yuso',
+    parent: 's4',
+    type: 'batch',
+    description: '郵送処理'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f88d'
+    },
+    id: 'a11',
+    label: 'tasha',
+    parent: 's4',
+    type: 'api',
+    description: '他社連携処理'
+  },
+  {
+    _id: {
+      $oid: '6652e140f02e3689de66f88e'
+    },
+    id: 'a12',
+    label: 'mail',
+    parent: 's4',
+    type: 'batch',
+    description: 'メール送信処理'
+  }
+]
+const edge = [
+  {
+    _id: {
+      $oid: '6652d7aff02e3689de66f85e'
+    },
+    id: 'r1',
+    source: 'a1',
+    target: 'a4',
+    label: 'i1',
+    crud: 'call',
+    description: 'いつどんなとき呼ぶなどの説明'
+  },
+  {
+    _id: {
+      $oid: '6652d7aff02e3689de66f85f'
+    },
+    id: 'r2',
+    source: 'a2',
+    target: 'a5',
+    label: 'i3',
+    crud: 'call',
+    description: 'いつどんなとき呼ぶなどの説明'
+  },
+  {
+    _id: {
+      $oid: '6652d7aff02e3689de66f860'
+    },
+    id: 'r3',
+    source: 'a3',
+    target: 'a4',
+    label: 'i1',
+    crud: 'call',
+    description: 'いつどんなとき呼ぶなどの説明'
+  },
+  {
+    _id: {
+      $oid: '6652d7aff02e3689de66f861'
+    },
+    id: 'r4',
+    source: 'a4',
+    target: 'a8',
+    label: 'i2',
+    crud: 'c',
+    description: 'いつどんなとき呼ぶなどの説明'
+  },
+  {
+    _id: {
+      $oid: '6652d7aff02e3689de66f862'
+    },
+    id: 'r5',
+    source: 'a1',
+    target: 'a10',
+    label: 'i4',
+    crud: 'cu',
+    description: 'いつどんなとき呼ぶなどの説明'
+  },
+  {
+    _id: {
+      $oid: '6652d7aff02e3689de66f863'
+    },
+    id: 'r6',
+    source: 'a3',
+    target: 'a10',
+    label: 'i4',
+    crud: 'cu',
+    description: 'いつどんなとき呼ぶなどの説明'
+  },
+  {
+    _id: {
+      $oid: '6652d7aff02e3689de66f864'
+    },
+    id: 'r7',
+    source: 'a2',
+    target: 'a11',
+    label: 'i5',
+    crud: 'cd',
+    description: 'いつどんなとき呼ぶなどの説明'
+  },
+  {
+    _id: {
+      $oid: '6652d7aff02e3689de66f865'
+    },
+    id: 'r8',
+    source: 'a5',
+    target: 'a9',
+    label: 'i6',
+    crud: 'r',
+    description: 'いつどんなとき呼ぶなどの説明'
+  },
+  {
+    _id: {
+      $oid: '6652d7aff02e3689de66f866'
+    },
+    id: 'r9',
+    source: 'a2',
+    target: 'a7',
+    label: 'i7',
+    crud: 'r',
+    description: 'いつどんなとき呼ぶなどの説明'
+  }
+]
+
+function wrapCytoscapeData(ary: Array<Object>) {
+  const ret = ary.map(_data => {
+    return { data: _data }
+  })
+  return ret
+}
+
 function Cytoscape() {
   const [width, setWith] = useState('100%')
   const [height, setHeight] = useState('70vh')
   const [base64png, setBase64png] = useState('')
   const [nodeSpacing, setNodeSpacing] = useState(50)
   const [graphData, setGraphData] = useState({
-    nodes: [
-      { data: { id: 's1', label: 'uketsuke', type: 'system' } },
-      { data: { id: 's2', label: 'api', type: 'system' } },
-      { data: { id: 's3', label: 'kikan', type: 'system' } },
-      { data: { id: 's4', label: 'subsys', type: 'system' } },
+    // nodes: [
+    //   { data: { id: 's1', label: 'uketsuke', type: 'system' } },
+    //   { data: { id: 's2', label: 'api', type: 'system' } },
+    //   { data: { id: 's3', label: 'kikan', type: 'system' } },
+    //   { data: { id: 's4', label: 'subsys', type: 'system' } },
 
-      { data: { id: 'a1', label: 'customer-web', type: 'app', parent: 's1' } },
-      { data: { id: 'a2', label: 'tempo-web', type: 'app', parent: 's1' } },
-      { data: { id: 'a3', label: 'app-web', type: 'app', parent: 's1' } },
-      { data: { id: 'a4', label: 'com-api', type: 'app', parent: 's2' } },
-      { data: { id: 'a5', label: 'sys-api', type: 'app', parent: 's2' } },
-      { data: { id: 'a6', label: 'tasha-api', type: 'app', parent: 's2' } },
-      { data: { id: 'a7', label: 'flow', type: 'app', parent: 's3' } },
-      { data: { id: 'a8', label: 'db', type: 'app', parent: 's3' } },
-      { data: { id: 'a9', label: 'db-2', type: 'app', parent: 's3' } },
-      { data: { id: 'a10', label: 'yuso', type: 'app', parent: 's4' } },
-      { data: { id: 'a11', label: 'tasha', type: 'app', parent: 's4' } },
-      { data: { id: 'a12', label: 'mail', type: 'app', parent: 's4' } }
-    ],
-    edges: [
-      { data: { source: 'a1', target: 'a4', label: 'i1' } },
-      { data: { source: 'a2', target: 'a5', label: 'i3' } },
-      { data: { source: 'a3', target: 'a4', label: 'i1' } },
-      { data: { source: 'a4', target: 'a8', label: 'i2' } },
-      { data: { source: 'a1', target: 'a10', label: 'i4' } },
-      { data: { source: 'a3', target: 'a10', label: 'i4' } },
-      { data: { source: 'a2', target: 'a11', label: 'i5' } },
-      { data: { source: 'a5', target: 'a9', label: 'i6' } },
-      { data: { source: 'a2', target: 'a7', label: 'i7' } }
-    ]
+    //   { data: { id: 'a1', label: 'customer-web', type: 'app', parent: 's1' } },
+    //   { data: { id: 'a2', label: 'tempo-web', type: 'app', parent: 's1' } },
+    //   { data: { id: 'a3', label: 'app-web', type: 'app', parent: 's1' } },
+    //   { data: { id: 'a4', label: 'com-api', type: 'app', parent: 's2' } },
+    //   { data: { id: 'a5', label: 'sys-api', type: 'app', parent: 's2' } },
+    //   { data: { id: 'a6', label: 'tasha-api', type: 'app', parent: 's2' } },
+    //   { data: { id: 'a7', label: 'flow', type: 'app', parent: 's3' } },
+    //   { data: { id: 'a8', label: 'db', type: 'app', parent: 's3' } },
+    //   { data: { id: 'a9', label: 'db-2', type: 'app', parent: 's3' } },
+    //   { data: { id: 'a10', label: 'yuso', type: 'app', parent: 's4' } },
+    //   { data: { id: 'a11', label: 'tasha', type: 'app', parent: 's4' } },
+    //   { data: { id: 'a12', label: 'mail', type: 'app', parent: 's4' } }
+    // ],
+    // edges: [
+    //   { data: { source: 'a1', target: 'a4', label: 'i1' } },
+    //   { data: { source: 'a2', target: 'a5', label: 'i3' } },
+    //   { data: { source: 'a3', target: 'a4', label: 'i1' } },
+    //   { data: { source: 'a4', target: 'a8', label: 'i2' } },
+    //   { data: { source: 'a1', target: 'a10', label: 'i4' } },
+    //   { data: { source: 'a3', target: 'a10', label: 'i4' } },
+    //   { data: { source: 'a2', target: 'a11', label: 'i5' } },
+    //   { data: { source: 'a5', target: 'a9', label: 'i6' } },
+    //   { data: { source: 'a2', target: 'a7', label: 'i7' } }
+    // ]
+    nodes: wrapCytoscapeData(node),
+    edges: wrapCytoscapeData(edge)
   })
 
   // const layout = {
@@ -156,7 +429,8 @@ function Cytoscape() {
         'line-color': '#AAD8FF',
         'target-arrow-color': '#6774cb',
         'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier'
+        // ex) <https://js.cytoscape.org/demos/edge-types/>
+        'curve-style': 'unbundled-bezier'
       }
     },
     {
@@ -168,7 +442,7 @@ function Cytoscape() {
         'border-color': '#AAD8FF',
         'border-opacity': '0.5',
         'background-color': '#77828C',
-        width: 5,
+        width: 10,
         height: 5,
         //text props
         'text-outline-color': '#77828C',
@@ -217,22 +491,47 @@ function Cytoscape() {
               console.log('EVT', cy)
               var popup = document.getElementById('popup')
 
-              cy.on('mouseover', evt => {
-                console.log('mouseover.evt', evt)
-                console.log('mouseover.evt.target', evt.target)
+              cy.on('mouseover', 'node', evt => {
+                // console.log('mouseover.evt', evt)
+                // console.log('mouseover.evt.target', evt.target)
                 var node = evt.target
-                console.log(node)
+                // console.log(node)
                 var position = evt.position
-                console.log('position', position)
+                // console.log('position', position)
                 var data = node.data()
                 if (popup && position && data.id) {
                   popup.style.display = 'block'
                   // canvasの左上に付ける
                   // popup.style.left = position.x + 200 + 'px'
                   // popup.style.top = position.y + 50 + 'px'
-                  popup.innerHTML = 'ID: ' + data.id + '<br>Name: ' + data.name + '<br>Info: ' + data.info
+                  popup.innerHTML =
+                    'システムID: ' +
+                    data.id +
+                    '<br>システム名: ' +
+                    data.label +
+                    '<br>タイプ: ' +
+                    data.type +
+                    '<br>説明: ' +
+                    data.description
                 }
               })
+
+              cy.on('mouseover', 'edge', evt => {
+                var node = evt.target
+                var position = evt.position
+                var data = node.data()
+                if (popup && position && data.id) {
+                  popup.style.display = 'block'
+                  popup.innerHTML =
+                    'インターフェスID: ' +
+                    data.label +
+                    '<br>アクセス元システム： ' +
+                    '（アクセス元システム名）' +
+                    '<br>アクセス先システム: ' +
+                    '（アクセス先システム名）'
+                }
+              })
+
               cy.on('mouseout', evt => {
                 var popup = document.getElementById('popup')
                 if (popup) {
@@ -245,20 +544,37 @@ function Cytoscape() {
                 // console.log('EVT', evt)
                 // console.log('EVT.cy', evt.cy)
                 // console.log('EVT.cy._private', evt.cy._private)
-                console.log('EVT.cy._private', '')
+                console.log('EVT.cy._private', evt)
                 // console.log('cy.nodes', cy.nodes())
                 // cy.nodes()[0].active()
                 // console.log('TARGET', node.data())
                 // console.log('TARGET TYPE', typeof node[0])
                 // var png64 = cy.png()
                 // setBase64png(png64)
-                const filterCy = cy.filter(function (element, i) {
-                  console.log('filter', element)
-                  return false
-                  // return element.isNode() && element.data('weight') > 50
-                })
-                console.log(filterCy)
-                cy.data(filterCy)
+
+                // TODO: フィルター処理実装
+                // const filterCy = cy.filter(function (element, i) {
+                //   // console.log('filter', element)
+                //   return false
+                //   // return element.isNode() && element.data('weight') > 50
+                // })
+                // console.log(filterCy)
+                // cy.data(filterCy)
+
+                // TODO: ノードに関するノード/エッジをハイライトさせたい（調べたができなさそう）
+                // 関連要素をハイライト
+                // 既存の選択をクリア
+                // cy.elements().forEach(el => {
+                //   console.log(el.classes())
+                //   el.removeClass('highlighted')
+                //   console.log(el.classes())
+                // })
+                // // タップされたノードと関連エッジ、ノードを選択状態にする
+                // var connectedEdges = node.connectedEdges()
+                // var connectedNodes = connectedEdges.connectedNodes()
+                // node.addClass('highlighted')
+                // connectedEdges.addClass('highlighted')
+                // connectedNodes.addClass('highlighted')
               })
               cy.on('tap', 'edge', evt => {
                 var edge = evt.target
