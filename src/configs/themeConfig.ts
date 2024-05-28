@@ -17,7 +17,7 @@ type ThemeConfig = {
 
 const themeConfig: ThemeConfig = {
   // ** Layout Configs
-  templateName: 'Materio' /* App Name */,
+  templateName: 'Interface DB' /* App Name MEMO: アプリタイトル編集*/,
   mode: 'light' /* light | dark */,
   contentWidth: 'boxed' /* full | boxed */,
 
