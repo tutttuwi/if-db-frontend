@@ -1,0 +1,259 @@
+' PlantUML ER図ファイルの拡張子 puml
+
+' --------------------------------------------------
+' ルール
+' テーブルの背景色
+' リソースエンティティ
+' #PaleTurquoise
+' 水色 緑色系 (落ち着いた色)
+' --------------------------------------------------
+
+' --------------------------------------------------
+' イベントエンティティ
+' #NavajoWhite
+' 黄色 オレンジ色系 (活発な色)
+' --------------------------------------------------
+
+' --------------------------------------------------
+' |o-- 0 か 1
+' ||-- 1 のみ
+' }o-- 0 以上
+' }|-- 1 以上
+' registration_records }-d-|| countries
+' --------------------------------------------------
+
+
+' --------------------------------------------------
+' テンプレート
+' --------------------------------------------------
+
+@startuml table_name
+
+!define Table(name,desc) entity name as "desc" << (T,#FFAAAA) >>
+!define primary_key(x) <b><u>x</u></b>
+!define foreign_key(x) <u>x</u>
+
+' パッケージ
+package package <<Database>> {
+
+' テーブルの名前小文字複数形スネークケース
+Table(main_tables, "メインテーブル") #PaleTurquoise {
+    primary_key(id) <<generated>> [ID]
+    --
+    ' テーブルのカラム名 小文字スネークケース
+    --
+    ' 日付
+    new_registration_date_time timestamptz [新規登録日時]
+    last_update_date timestamptz [最終更新日時]
+}
+
+Table(sub_tables, "サブテーブル") #PaleTurquoise {
+    primary_key(id) <<generated>> [ID]
+    --
+    ' 外部キー
+    foreign_key(main_table_id) <<FK>> [メインテーブルID]
+    --
+    ' テーブルのカラム名 小文字スネークケース
+    --
+    ' 日付
+    new_registration_date_time timestamptz [新規登録日時]
+    last_update_date timestamptz [最終更新日時]
+}
+
+
+
+ main_tables }--|| sub_tables
+
+'パッケージの閉じカッコ
+}
+
+' --------------------------------------------------
+' エンティティ色変更
+' --------------------------------------------------
+entity red #red {
+}
+entity blue #blue {
+}
+entity custermize #AAEEBB {
+}
+entity gradation1 #red-green {
+}
+entity gradation2 #red|green {
+}
+entity gradation3 #red/green {
+}
+entity gradation4 #red\green {
+}
+
+' --------------------------------------------------
+' エンティティにラベル付け
+' --------------------------------------------------
+entity entity1 <label type 1> {
+}
+entity entity2 <<label type 2>> {
+}
+
+' --------------------------------------------------
+' 属性の頭のマークをつける
+' --------------------------------------------------
+entity "attribute symbol" {
+    + green circle
+    - red square
+    # yellow diamond
+    ~ blue triangle
+    * black circle
+    nothing
+}
+
+' --------------------------------------------------
+' 太文字や斜体
+' --------------------------------------------------
+entity "attribute style" {
+    normal
+    <b> bold
+    <i> italic
+    <u> underline
+    <color:RED> red
+}
+
+' --------------------------------------------------
+' セパレーター
+' --------------------------------------------------
+entity "separator style" {
+    normal
+    --
+    double
+    ==
+    dot
+    ..
+    bold
+    __
+}
+
+' --------------------------------------------------
+' セパレータ タイトル付き
+' --------------------------------------------------
+entity "separator title" {
+    -- normal --
+    == double ==
+    .. dot ..
+    __ bold __
+}
+
+' --------------------------------------------------
+' リレーション 上下左右指定
+' --------------------------------------------------
+entity entity {
+}
+entity up {
+}
+entity down {
+}
+entity right {
+}
+entity left {
+}
+entity -up- up
+entity -do- down
+entity -ri- right
+entity -le- left
+
+' --------------------------------------------------
+' 矢印リレーション
+' --------------------------------------------------
+entity entity1 {
+}
+entity entity2 {
+}
+entity1 -ri- entity2 : labeling
+entity1 -ri- entity2 : arrow >
+entity1 -ri- entity2 : arrow <
+
+' --------------------------------------------------
+' カーディナリティ表現
+' --------------------------------------------------
+entity entity11 {
+}
+entity entity21 {
+}
+entity11 -ri- entity21 : one >
+entity11 -ri-o| entity21 : zero or one >
+entity11 -ri-o{ entity21 : zero or many >
+entity11 -ri-|| entity21 : one and only one >
+entity11 -ri-|{ entity21 : one or many >
+entity11 -ri-{ entity21 : many >
+
+' --------------------------------------------------
+' パッケージ表現
+' --------------------------------------------------
+package default {
+    entity entity1 {
+    }
+}
+package node <<Node>> {
+    entity entity2 {
+    }
+}
+package rectangle <<Rectangle>> {
+    entity entity3 {
+    }
+}
+package frame <<Frame>> {
+    entity entity4 {
+    }
+}
+package cloud <<Cloud>> {
+    entity entity5 {
+    }
+}
+package database <<Database>> {
+    entity entity6 {
+    }
+}
+package folder <<Folder>> {
+    entity entity7 {
+    }
+}
+
+' --------------------------------------------------
+' パッケージ間リレーション
+' --------------------------------------------------
+package package1 <<Node>> {
+    entity entity1 {
+    }
+}
+package package2 <<Node>> {
+    entity entity2 {
+    }
+}
+package1 -ri- package2
+
+
+' --------------------------------------------------
+' カラー変更
+' --------------------------------------------------
+skinparam class {
+    BackgroundColor PaleGreen
+    ArrowColor SeaGreen
+    BorderColor Green
+}
+entity entity12 {
+}
+entity entity22 {
+}
+entity12 -ri- entity22
+
+' --------------------------------------------------
+' メモ書き
+' --------------------------------------------------
+entity entity13 {
+}
+entity entity23 {
+}
+note top of entity13 : this is note1.
+note bottom of entity23 : this is note2.
+note right of entity23 : this is note3.\nnext line.
+entity1 -ri- entity23
+note on link : this is note4.
+
+@enduml
