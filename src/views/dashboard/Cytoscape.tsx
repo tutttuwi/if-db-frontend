@@ -19,6 +19,7 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 
 // ** Demo Components Imports
 import Table from 'src/views/dashboard/Table'
+import DataTableWithFilter from 'src/views/dashboard/DataTableWithFilter'
 
 import React, { useState, ChangeEvent } from 'react'
 import CytoscapeComponent from 'react-cytoscapejs'
@@ -491,7 +492,7 @@ function Cytoscape() {
         </a> */}
         <div id='popup' className='popup'></div>
         <Grid container spacing={6}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={6} md={6}>
             <Card>
               <CardHeader
                 title='システム連携図'
@@ -631,8 +632,8 @@ function Cytoscape() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={6} container direction='row'>
-            <Grid item xs={12}>
+          <Grid item xs={6} md={6} container direction='row'>
+            <Grid item xs={12} sx={{ flex: 1, height: '50px' }}>
               <Card>
                 <CardHeader
                   title='システム検索条件'
@@ -694,8 +695,10 @@ function Cytoscape() {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12}>
-              <Table />
+            <Grid item xs={12} sx={{ flex: 1 }}>
+              <Box sx={{ padding: 0, height: '100%' }}>
+                <DataTableWithFilter />
+              </Box>
             </Grid>
           </Grid>
         </Grid>
