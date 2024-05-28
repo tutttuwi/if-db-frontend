@@ -7,6 +7,8 @@ import CardHeader from '@mui/material/CardHeader'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 
 // ** Icons Imports
 import TrendingUp from 'mdi-material-ui/TrendingUp'
@@ -649,12 +651,45 @@ function Cytoscape() {
                       mb: 2.5,
                       lineHeight: '2rem !important',
                       letterSpacing: '0.15px !important'
-                    }
+                    },
+                    alignItems: 'center'
                   }}
                 />
                 <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
-                  <Grid container spacing={[5, 0]}>
-                    xxxxxxxxxxx
+                  <Grid container>
+                    <Grid item xs={4}>
+                      <Autocomplete
+                        id='combo-box-demo'
+                        options={[
+                          { label: 'hoge', value: 'hoge' },
+                          { label: 'fuga', value: 'fuga' }
+                        ]}
+                        sx={{ width: 'auto' }}
+                        renderInput={params => <TextField {...params} label='グループ' />}
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Autocomplete
+                        id='combo-box-demo'
+                        options={[
+                          { label: 'hoge', value: 'hoge' },
+                          { label: 'fuga', value: 'fuga' }
+                        ]}
+                        sx={{ width: 'auto' }}
+                        renderInput={params => <TextField {...params} label='システム' />}
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Autocomplete
+                        id='combo-box-demo'
+                        options={[
+                          { label: 'hoge', value: 'hoge' },
+                          { label: 'fuga', value: 'fuga' }
+                        ]}
+                        sx={{ width: 'auto' }}
+                        renderInput={params => <TextField {...params} label='アプリ' />}
+                      />
+                    </Grid>
                   </Grid>
                 </CardContent>
               </Card>
