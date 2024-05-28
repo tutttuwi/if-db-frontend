@@ -1,5 +1,8 @@
+
 ## 動作設計
+
 ### システムノード
+
 - タップ
   - システムと連携しているアプリのエッジを活性化表示
 - ダブルタップ
@@ -7,6 +10,7 @@
     - 対象IFを選択:IFを利用しているシステム-アプリ、IFが参照しているシステム-アプリが一覧表示される
 
 ### アプリノード
+
 - タップ
   - アプリと連携しているアプリのエッジを活性化表示
 - ダブルタップ
@@ -22,13 +26,16 @@
 - 業務シナリオでフィルタすると、関連するIFのみが出てくる（業務シナリオの持ち方用検討）
 
 ### アカウント設定
+
 - 修正したノード位置を記録する:ノード追加された際に挙動問題ないか確認必要
 - ログイン画面実装
   - メールアドレス
   - パスワード
     - →追って認証機能追加
+- システム設定（担当システム登録）
 
 ### 管理画面
+
 - システム/アプリ追加画面(他社に関する情報も追加しておく)
   - 一覧画面
     - 参照:クリックで詳細画面遷移
@@ -56,7 +63,7 @@
       - 資料（配列[資料名:URL]）
       - 概要説明
 - IF管理画面
-  - アプリ一覧表示
+  - アプリ一覧表示(API/Batch/DB)
     - →アプリ選択
     - IF一覧画面
       - IF追加
@@ -89,7 +96,6 @@
 - いつ実行されるかの情報保持する
   - edgeに保持
 
-
 ### その他
 
 - []edgeの数に応じて、edgeの太さを太くする制御いれる?
@@ -102,7 +108,6 @@
 - [x] popper(取り下げ)→普通にmouseover時に要素表示するで良い
   - <https://github.com/cytoscape/cytoscape.js-popper?tab=readme-ov-file#usage-with-popperjs--deprecated->
 
-
 ### 作業メモ
 
 ReactにCytoscape.jsでネットワークグラフを書いてみた
@@ -110,7 +115,6 @@ https://zenn.dev/k8shiro/articles/sample-cytoscapejs
 
 https://stackblitz.com/edit/react-cytoscape-example-hiybsx?file=src%2FApp.js
 yarn add cytoscape-cola
-
 
 yarn add react-cytoscapejs
 yarn add cytoscape

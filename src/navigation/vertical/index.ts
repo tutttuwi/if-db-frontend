@@ -10,39 +10,43 @@ import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
 import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 
+import Group from 'mdi-material-ui/Group'
+import PaletteSwatchVariant from 'mdi-material-ui/PaletteSwatchVariant'
+import ApplicationBracesOutline from 'mdi-material-ui/ApplicationBracesOutline'
+
 // ** Type import
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
 
 const navigation = (): VerticalNavItemsType => {
   return [
     {
-      title: 'Dashboard',
+      title: 'システム連携一覧',
       icon: HomeOutline,
       path: '/'
     },
     {
-      title: 'Account Settings',
+      title: 'アカウント設定',
       icon: AccountCogOutline,
       path: '/account-settings'
     },
     {
-      sectionTitle: 'Pages'
+      sectionTitle: 'システム設定'
     },
     {
-      title: 'Login',
-      icon: Login,
+      title: 'グループ一覧',
+      icon: Group,
       path: '/pages/login',
       openInNewTab: true
     },
     {
-      title: 'Register',
-      icon: AccountPlusOutline,
+      title: 'システム一覧',
+      icon: PaletteSwatchVariant,
       path: '/pages/register',
       openInNewTab: true
     },
     {
-      title: 'Error',
-      icon: AlertCircleOutline,
+      title: 'アプリ一覧',
+      icon: ApplicationBracesOutline,
       path: '/pages/error',
       openInNewTab: true
     },

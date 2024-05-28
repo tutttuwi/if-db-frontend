@@ -1,3 +1,23 @@
+// ** MUI Imports
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import Avatar from '@mui/material/Avatar'
+import CardHeader from '@mui/material/CardHeader'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import CardContent from '@mui/material/CardContent'
+
+// ** Icons Imports
+import TrendingUp from 'mdi-material-ui/TrendingUp'
+import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
+import DotsVertical from 'mdi-material-ui/DotsVertical'
+import CellphoneLink from 'mdi-material-ui/CellphoneLink'
+import AccountOutline from 'mdi-material-ui/AccountOutline'
+
+// ** Demo Components Imports
+import Table from 'src/views/dashboard/Table'
+
 import React, { useState, ChangeEvent } from 'react'
 import CytoscapeComponent from 'react-cytoscapejs'
 import { ElementDefinition } from 'cytoscape'
@@ -460,133 +480,190 @@ function Cytoscape() {
   return (
     <>
       <div>
-        <h1>システム連携一覧</h1>
+        {/* <h1>システム連携一覧</h1> */}
         {/* TODO: ノードスペーシングおしゃれにする */}
-        <input type='number' value={nodeSpacing} onChange={handleNodeSpacing} />
+        {/* <input type='number' value={nodeSpacing} onChange={handleNodeSpacing} /> */}
         {/* TODO: ダウンロードボタン実装 */}
         {/* <a download='system-if.png' href={`${base64png}`} id='download'>
           ダウンロード
         </a> */}
         <div id='popup' className='popup'></div>
-        <div
-          style={{
-            border: '1px solid',
-            backgroundColor: '#f5f6fe'
-          }}
-        >
-          <CytoscapeComponent
-            elements={CytoscapeComponent.normalizeElements(graphData)}
-            // pan={{ x: 200, y: 200 }}
-            style={{ width: width, height: height }}
-            zoomingEnabled={true}
-            maxZoom={3}
-            minZoom={0.1}
-            autounselectify={false}
-            boxSelectionEnabled={true}
-            layout={layout}
-            stylesheet={styleSheet}
-            cy={cy => {
-              myCyRef = cy
-
-              console.log('EVT', cy)
-              var popup = document.getElementById('popup')
-
-              cy.on('mouseover', 'node', evt => {
-                // console.log('mouseover.evt', evt)
-                // console.log('mouseover.evt.target', evt.target)
-                var node = evt.target
-                // console.log(node)
-                var position = evt.position
-                // console.log('position', position)
-                var data = node.data()
-                if (popup && position && data.id) {
-                  popup.style.display = 'block'
-                  // canvasの左上に付ける
-                  // popup.style.left = position.x + 200 + 'px'
-                  // popup.style.top = position.y + 50 + 'px'
-                  popup.innerHTML =
-                    'システムID: ' +
-                    data.id +
-                    '<br>システム名: ' +
-                    data.label +
-                    '<br>タイプ: ' +
-                    data.type +
-                    '<br>説明: ' +
-                    data.description
+        <Grid container spacing={6}>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardHeader
+                title='システム連携図'
+                action={
+                  <IconButton
+                    size='small'
+                    aria-label='settings'
+                    className='card-more-options'
+                    sx={{ color: 'text.secondary' }}
+                  >
+                    {/* <DotsVertical /> */}
+                  </IconButton>
                 }
-              })
+                titleTypographyProps={{
+                  sx: {
+                    mb: 2.5,
+                    lineHeight: '2rem !important',
+                    letterSpacing: '0.15px !important'
+                  }
+                }}
+              />
+              <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
+                <Grid container spacing={[5, 0]}>
+                  <CytoscapeComponent
+                    elements={CytoscapeComponent.normalizeElements(graphData)}
+                    // pan={{ x: 200, y: 200 }}
+                    style={{ width: width, height: height }}
+                    zoomingEnabled={true}
+                    maxZoom={3}
+                    minZoom={0.1}
+                    autounselectify={false}
+                    boxSelectionEnabled={true}
+                    layout={layout}
+                    stylesheet={styleSheet}
+                    cy={cy => {
+                      myCyRef = cy
 
-              cy.on('mouseover', 'edge', evt => {
-                var node = evt.target
-                var position = evt.position
-                var data = node.data()
-                if (popup && position && data.id) {
-                  popup.style.display = 'block'
-                  popup.innerHTML =
-                    'インターフェスID: ' +
-                    data.label +
-                    '<br>アクセス元システム： ' +
-                    '（アクセス元システム名）' +
-                    '<br>アクセス先システム: ' +
-                    '（アクセス先システム名）'
-                }
-              })
+                      console.log('EVT', cy)
+                      var popup = document.getElementById('popup')
 
-              cy.on('mouseout', evt => {
-                var popup = document.getElementById('popup')
-                if (popup) {
-                  popup.style.display = 'none'
-                }
-              })
-              cy.on('tap', 'node', evt => {
-                var node = evt.target
-                console.log('click!node')
-                // console.log('EVT', evt)
-                // console.log('EVT.cy', evt.cy)
-                // console.log('EVT.cy._private', evt.cy._private)
-                console.log('EVT.cy._private', evt)
-                // console.log('cy.nodes', cy.nodes())
-                // cy.nodes()[0].active()
-                // console.log('TARGET', node.data())
-                // console.log('TARGET TYPE', typeof node[0])
-                // var png64 = cy.png()
-                // setBase64png(png64)
+                      cy.on('mouseover', 'node', evt => {
+                        // console.log('mouseover.evt', evt)
+                        // console.log('mouseover.evt.target', evt.target)
+                        var node = evt.target
+                        // console.log(node)
+                        var position = evt.position
+                        // console.log('position', position)
+                        var data = node.data()
+                        if (popup && position && data.id) {
+                          popup.style.display = 'block'
+                          // canvasの左上に付ける
+                          // popup.style.left = position.x + 200 + 'px'
+                          // popup.style.top = position.y + 50 + 'px'
+                          popup.innerHTML =
+                            'システムID: ' +
+                            data.id +
+                            '<br>システム名: ' +
+                            data.label +
+                            '<br>タイプ: ' +
+                            data.type +
+                            '<br>説明: ' +
+                            data.description
+                        }
+                      })
 
-                // TODO: フィルター処理実装
-                // const filterCy = cy.filter(function (element, i) {
-                //   // console.log('filter', element)
-                //   return false
-                //   // return element.isNode() && element.data('weight') > 50
-                // })
-                // console.log(filterCy)
-                // cy.data(filterCy)
+                      cy.on('mouseover', 'edge', evt => {
+                        var node = evt.target
+                        var position = evt.position
+                        var data = node.data()
+                        if (popup && position && data.id) {
+                          popup.style.display = 'block'
+                          popup.innerHTML =
+                            'インターフェスID: ' +
+                            data.label +
+                            '<br>アクセス元システム： ' +
+                            '（アクセス元システム名）' +
+                            '<br>アクセス先システム: ' +
+                            '（アクセス先システム名）'
+                        }
+                      })
 
-                // TODO: ノードに関するノード/エッジをハイライトさせたい（調べたができなさそう）
-                // 関連要素をハイライト
-                // 既存の選択をクリア
-                // cy.elements().forEach(el => {
-                //   console.log(el.classes())
-                //   el.removeClass('highlighted')
-                //   console.log(el.classes())
-                // })
-                // // タップされたノードと関連エッジ、ノードを選択状態にする
-                // var connectedEdges = node.connectedEdges()
-                // var connectedNodes = connectedEdges.connectedNodes()
-                // node.addClass('highlighted')
-                // connectedEdges.addClass('highlighted')
-                // connectedNodes.addClass('highlighted')
-              })
-              cy.on('tap', 'edge', evt => {
-                var edge = evt.target
-                console.log('click!edge')
-                console.log('EVT', evt)
-                console.log('TARGET', edge.data())
-                console.log('TARGET TYPE', typeof edge[0])
-              })
-            }}
-            abc={console.log('myCyRef', myCyRef)}
-          />
-        </div>
+                      cy.on('mouseout', evt => {
+                        var popup = document.getElementById('popup')
+                        if (popup) {
+                          popup.style.display = 'none'
+                        }
+                      })
+                      cy.on('tap', 'node', evt => {
+                        var node = evt.target
+                        console.log('click!node')
+                        // console.log('EVT', evt)
+                        // console.log('EVT.cy', evt.cy)
+                        // console.log('EVT.cy._private', evt.cy._private)
+                        console.log('EVT.cy._private', evt)
+                        // console.log('cy.nodes', cy.nodes())
+                        // cy.nodes()[0].active()
+                        // console.log('TARGET', node.data())
+                        // console.log('TARGET TYPE', typeof node[0])
+                        // var png64 = cy.png()
+                        // setBase64png(png64)
+
+                        // TODO: フィルター処理実装
+                        // const filterCy = cy.filter(function (element, i) {
+                        //   // console.log('filter', element)
+                        //   return false
+                        //   // return element.isNode() && element.data('weight') > 50
+                        // })
+                        // console.log(filterCy)
+                        // cy.data(filterCy)
+
+                        // TODO: ノードに関するノード/エッジをハイライトさせたい（調べたができなさそう）
+                        // 関連要素をハイライト
+                        // 既存の選択をクリア
+                        // cy.elements().forEach(el => {
+                        //   console.log(el.classes())
+                        //   el.removeClass('highlighted')
+                        //   console.log(el.classes())
+                        // })
+                        // // タップされたノードと関連エッジ、ノードを選択状態にする
+                        // var connectedEdges = node.connectedEdges()
+                        // var connectedNodes = connectedEdges.connectedNodes()
+                        // node.addClass('highlighted')
+                        // connectedEdges.addClass('highlighted')
+                        // connectedNodes.addClass('highlighted')
+                      })
+                      cy.on('tap', 'edge', evt => {
+                        var edge = evt.target
+                        console.log('click!edge')
+                        console.log('EVT', evt)
+                        console.log('TARGET', edge.data())
+                        console.log('TARGET TYPE', typeof edge[0])
+                      })
+                    }}
+                    abc={console.log('myCyRef', myCyRef)}
+                  />
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6} container direction='row'>
+            <Grid item xs={12}>
+              <Card>
+                <CardHeader
+                  title='システム検索条件'
+                  action={
+                    <IconButton
+                      size='small'
+                      aria-label='settings'
+                      className='card-more-options'
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      {/* <DotsVertical /> */}
+                    </IconButton>
+                  }
+                  titleTypographyProps={{
+                    sx: {
+                      mb: 2.5,
+                      lineHeight: '2rem !important',
+                      letterSpacing: '0.15px !important'
+                    }
+                  }}
+                />
+                <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
+                  <Grid container spacing={[5, 0]}>
+                    xxxxxxxxxxx
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12}>
+              <Table />
+            </Grid>
+          </Grid>
+        </Grid>
       </div>
     </>
   )

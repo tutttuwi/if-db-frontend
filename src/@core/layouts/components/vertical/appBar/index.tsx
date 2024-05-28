@@ -57,7 +57,8 @@ const LayoutAppBar = (props: Props) => {
         className='navbar-content-container'
         sx={{
           ...(contentWidth === 'boxed' && {
-            '@media (min-width:1440px)': { maxWidth: `calc(1440px - ${theme.spacing(6)} * 2)` }
+            // '@media (min-width:1440px)': { maxWidth: `calc(1440px - ${theme.spacing(6)} * 2)` }
+            '@media (min-width:1600px)': { maxWidth: `calc(1600px - ${theme.spacing(6)} * 2)` }
           })
         }}
       >

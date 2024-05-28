@@ -44,7 +44,7 @@ const AppBarContent = (props: Props) => {
             <Menu />
           </IconButton>
         ) : null}
-        <TextField
+        {/* <TextField
           size='small'
           sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
           InputProps={{
@@ -54,10 +54,10 @@ const AppBarContent = (props: Props) => {
               </InputAdornment>
             )
           }}
-        />
+        /> */}
       </Box>
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
-        {hiddenSm ? null : (
+        {/* {hiddenSm ? null : (
           <Box
             component='a'
             target='_blank'
@@ -71,9 +71,10 @@ const AppBarContent = (props: Props) => {
               src='https://img.shields.io/github/stars/themeselection/materio-mui-react-nextjs-admin-template-free?style=social'
             />
           </Box>
-        )}
-        <ModeToggler settings={settings} saveSettings={saveSettings} />
-        <NotificationDropdown />
+        )} */}
+        {/* <ModeToggler settings={settings} saveSettings={saveSettings} /> */}
+        {/* <NotificationDropdown /> */}
+        {/* MEMO: ユーザ情報保持 */}
         <UserDropdown />
       </Box>
     </Box>
