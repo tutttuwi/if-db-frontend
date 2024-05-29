@@ -21,6 +21,9 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import Table from 'src/views/dashboard/Table'
 import DataTableWithFilter from 'src/views/dashboard/DataTableWithFilter'
 
+// ** DB Access
+import ifdb from 'src/db/ifdb/ifdb'
+
 import React, { useState, ChangeEvent } from 'react'
 import CytoscapeComponent from 'react-cytoscapejs'
 import { ElementDefinition } from 'cytoscape'
@@ -479,6 +482,8 @@ function Cytoscape() {
   const handleNodeSpacing = (e: ChangeEvent<HTMLInputElement>) => {
     setNodeSpacing(Number(e.currentTarget.value))
   }
+
+  ifdb()
 
   return (
     <>
