@@ -22,7 +22,8 @@ import Table from 'src/views/dashboard/Table'
 import DataTableWithFilter from 'src/views/dashboard/DataTableWithFilter'
 
 // ** DB Access
-import ifdb from 'src/db/ifdb/ifdb'
+import { DbNode } from 'src/db/ifdb/ifdb'
+let DbNode = DbNode.find
 
 import React, { useState, ChangeEvent } from 'react'
 import CytoscapeComponent from 'react-cytoscapejs'
@@ -483,7 +484,10 @@ function Cytoscape() {
     setNodeSpacing(Number(e.currentTarget.value))
   }
 
-  ifdb()
+  var dbNode = new DbNode()
+  dbNode.find({}, function (err: Error, result: Object) {
+    console.log(result)
+  })
 
   return (
     <>
