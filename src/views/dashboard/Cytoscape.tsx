@@ -22,8 +22,17 @@ import Table from 'src/views/dashboard/Table'
 import DataTableWithFilter from 'src/views/dashboard/DataTableWithFilter'
 
 // ** DB Access
-import { DbNode } from 'src/db/ifdb/ifdb'
-let DbNode = DbNode.find
+import connectDB from 'src/db/ifdb/db'
+import { NodeModel } from 'src/db/models/IFDBNode'
+// var NodeSchema = model.NodeSchema
+// import IFDBNode from 'src/db/models/IFDBNode'
+// ;async () => {
+//   await connectDB()
+//   const node = await IFDBNode.find()
+//   console.log(node)
+// }
+// import { test } from 'src/db/nodesApi'
+// test()
 
 import React, { useState, ChangeEvent } from 'react'
 import CytoscapeComponent from 'react-cytoscapejs'
@@ -483,11 +492,6 @@ function Cytoscape() {
   const handleNodeSpacing = (e: ChangeEvent<HTMLInputElement>) => {
     setNodeSpacing(Number(e.currentTarget.value))
   }
-
-  var dbNode = new DbNode()
-  dbNode.find({}, function (err: Error, result: Object) {
-    console.log(result)
-  })
 
   return (
     <>
