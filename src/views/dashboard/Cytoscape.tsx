@@ -33,9 +33,13 @@ import { NodeModel } from 'src/db/models/IFDBNode'
 // }
 // import { test } from 'src/db/nodesApi'
 // test()
+// ** API Access
+import axios from 'axios'
 
-import React, { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import CytoscapeComponent from 'react-cytoscapejs'
+// const CytoscapeComponent = dynamic(() => import('react-cytoscapejs'), { ssr: false })
 import { ElementDefinition } from 'cytoscape'
 import cys from 'cytoscape'
 /**@ts-ignore */
@@ -307,7 +311,7 @@ const edge = [
   }
 ]
 
-function wrapCytoscapeData(ary: Array<Object>) {
+function wrapCytoscapeData(ary: Array<Object>): [] {
   const ret = ary.map(_data => {
     return { data: _data }
   })
@@ -319,40 +323,40 @@ function Cytoscape() {
   const [height, setHeight] = useState('70vh')
   const [base64png, setBase64png] = useState('')
   const [nodeSpacing, setNodeSpacing] = useState(50)
-  const [graphData, setGraphData] = useState({
-    // nodes: [
-    //   { data: { id: 's1', label: 'uketsuke', type: 'system' } },
-    //   { data: { id: 's2', label: 'api', type: 'system' } },
-    //   { data: { id: 's3', label: 'kikan', type: 'system' } },
-    //   { data: { id: 's4', label: 'subsys', type: 'system' } },
 
-    //   { data: { id: 'a1', label: 'customer-web', type: 'app', parent: 's1' } },
-    //   { data: { id: 'a2', label: 'tempo-web', type: 'app', parent: 's1' } },
-    //   { data: { id: 'a3', label: 'app-web', type: 'app', parent: 's1' } },
-    //   { data: { id: 'a4', label: 'com-api', type: 'app', parent: 's2' } },
-    //   { data: { id: 'a5', label: 'sys-api', type: 'app', parent: 's2' } },
-    //   { data: { id: 'a6', label: 'tasha-api', type: 'app', parent: 's2' } },
-    //   { data: { id: 'a7', label: 'flow', type: 'app', parent: 's3' } },
-    //   { data: { id: 'a8', label: 'db', type: 'app', parent: 's3' } },
-    //   { data: { id: 'a9', label: 'db-2', type: 'app', parent: 's3' } },
-    //   { data: { id: 'a10', label: 'yuso', type: 'app', parent: 's4' } },
-    //   { data: { id: 'a11', label: 'tasha', type: 'app', parent: 's4' } },
-    //   { data: { id: 'a12', label: 'mail', type: 'app', parent: 's4' } }
-    // ],
-    // edges: [
-    //   { data: { source: 'a1', target: 'a4', label: 'i1' } },
-    //   { data: { source: 'a2', target: 'a5', label: 'i3' } },
-    //   { data: { source: 'a3', target: 'a4', label: 'i1' } },
-    //   { data: { source: 'a4', target: 'a8', label: 'i2' } },
-    //   { data: { source: 'a1', target: 'a10', label: 'i4' } },
-    //   { data: { source: 'a3', target: 'a10', label: 'i4' } },
-    //   { data: { source: 'a2', target: 'a11', label: 'i5' } },
-    //   { data: { source: 'a5', target: 'a9', label: 'i6' } },
-    //   { data: { source: 'a2', target: 'a7', label: 'i7' } }
-    // ]
-    nodes: wrapCytoscapeData(node),
-    edges: wrapCytoscapeData(edge)
-  })
+  const [nodes, setNodes] = useState([])
+  const [edges, setEdges] = useState([])
+  // データ取得
+  // axios.get('http://localhost:4001/api/nodes').then(result => {
+  //   console.log(result.data)
+  // })
+  // axios.get('http://localhost:4001/api/edges').then(result => {
+  //   // console.log(result.data)
+  //   // setNodes(result.data)
+  //   // setEdges(result.data)
+  // })
+  const [graphData, setGraphData] = useState({})
+  const [data, setData] = useState()
+  const [error, setError] = useState()
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    axios.get('http://localhost:4001/api/nodes').then(ret1 => {
+      console.log('ret1.data', ret1.data)
+      axios.get('http://localhost:4001/api/edges').then(ret2 => {
+        console.log('ret2.data', ret2.data)
+        // setNodes(ret1.data)
+        // setEdges(ret2.data)
+        setGraphData([].concat(wrapCytoscapeData(ret1.data), wrapCytoscapeData(ret2.data)))
+        setLoading(false)
+      })
+    })
+  }, [])
+
+  if (error) return <pre>{JSON.stringify(error, null, 2)}</pre>
+  if (loading) return <h1>loading...</h1>
+  // if (!data) return null
 
   // const layout = {
   //   name: 'breadthfirst',
