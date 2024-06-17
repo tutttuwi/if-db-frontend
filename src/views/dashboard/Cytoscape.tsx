@@ -61,6 +61,9 @@ function Cytoscape() {
   const [nodeSpacing, setNodeSpacing] = useState(50)
 
   const [nodes, setNodes] = useState([])
+  const [groupNodes, setGroupNodes] = useState(Array)
+  const [systemNodes, setSystemNodes] = useState(Array)
+  const [appNodes, setAppNodes] = useState(Array)
   const [edges, setEdges] = useState([])
   // データ取得
   // axios.get('http://localhost:4001/api/nodes').then(result => {
@@ -82,8 +85,37 @@ function Cytoscape() {
       console.log('ret1.data', ret1.data)
       axios.get('http://localhost:4001/api/edges').then(ret2 => {
         console.log('ret2.data', ret2.data)
-        // setNodes(ret1.data)
-        // setEdges(ret2.data)
+        setNodes(ret1.data)
+        setEdges(ret2.data)
+        const nodes: [] = ret1.data
+        setGroupNodes(
+          nodes.map((n: any) => {
+            if (n.type === 'group') {
+              n.value = n.name
+            }
+            return n
+          })
+        )
+        // setSystemNodes(nodes.filter((n: any) => n.type === 'system'))
+        setSystemNodes(
+          nodes.map((n: any) => {
+            if (n.type === 'system') {
+              n.value = n.name
+            }
+            return n
+          })
+        )
+
+        // setAppNodes(nodes.filter((n: any) => n.type === 'app'))
+        setAppNodes(
+          nodes.map((n: any) => {
+            if (n.type === 'app') {
+              n.value = n.name
+            }
+            return n
+          })
+        )
+
         setGraphData([].concat(wrapCytoscapeData(ret1.data), wrapCytoscapeData(ret2.data)))
         setLoading(false)
       })
@@ -414,10 +446,7 @@ function Cytoscape() {
                     <Grid item xs={4}>
                       <Autocomplete
                         id='combo-box-demo'
-                        options={[
-                          { label: 'hoge', value: 'hoge' },
-                          { label: 'fuga', value: 'fuga' }
-                        ]}
+                        options={groupNodes}
                         sx={{ width: 'auto' }}
                         renderInput={params => <TextField {...params} label='グループ' />}
                       />
@@ -425,10 +454,7 @@ function Cytoscape() {
                     <Grid item xs={4}>
                       <Autocomplete
                         id='combo-box-demo'
-                        options={[
-                          { label: 'hoge', value: 'hoge' },
-                          { label: 'fuga', value: 'fuga' }
-                        ]}
+                        options={systemNodes}
                         sx={{ width: 'auto' }}
                         renderInput={params => <TextField {...params} label='システム' />}
                       />
@@ -436,10 +462,7 @@ function Cytoscape() {
                     <Grid item xs={4}>
                       <Autocomplete
                         id='combo-box-demo'
-                        options={[
-                          { label: 'hoge', value: 'hoge' },
-                          { label: 'fuga', value: 'fuga' }
-                        ]}
+                        options={appNodes}
                         sx={{ width: 'auto' }}
                         renderInput={params => <TextField {...params} label='アプリ' />}
                       />
