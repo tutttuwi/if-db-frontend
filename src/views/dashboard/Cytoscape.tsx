@@ -89,31 +89,31 @@ function Cytoscape() {
         setEdges(ret2.data)
         const nodes: [] = ret1.data
         setGroupNodes(
-          nodes.map((n: any) => {
-            if (n.type === 'group') {
+          nodes
+            .filter((n: any) => n.type === 'group')
+            .map((n: any) => {
               n.value = n.name
-            }
-            return n
-          })
+              return n
+            })
         )
         // setSystemNodes(nodes.filter((n: any) => n.type === 'system'))
         setSystemNodes(
-          nodes.map((n: any) => {
-            if (n.type === 'system') {
+          nodes
+            .filter((n: any) => n.type === 'system')
+            .map((n: any) => {
               n.value = n.name
-            }
-            return n
-          })
+              return n
+            })
         )
 
         // setAppNodes(nodes.filter((n: any) => n.type === 'app'))
         setAppNodes(
-          nodes.map((n: any) => {
-            if (n.type === 'app') {
+          nodes
+            .filter((n: any) => n.type === 'app')
+            .map((n: any) => {
               n.value = n.name
-            }
-            return n
-          })
+              return n
+            })
         )
 
         setGraphData([].concat(wrapCytoscapeData(ret1.data), wrapCytoscapeData(ret2.data)))
