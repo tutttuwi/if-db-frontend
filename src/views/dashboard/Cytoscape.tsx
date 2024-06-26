@@ -64,6 +64,7 @@ function Cytoscape() {
   const [groupNodes, setGroupNodes] = useState(Array)
   const [systemNodes, setSystemNodes] = useState(Array)
   const [appNodes, setAppNodes] = useState(Array)
+  const [filteredNodes, setFilteredNodes] = useState(Array)
   const [edges, setEdges] = useState([])
   // データ取得
   // axios.get('http://localhost:4001/api/nodes').then(result => {
@@ -265,6 +266,12 @@ function Cytoscape() {
     setNodeSpacing(Number(e.currentTarget.value))
   }
 
+  function filterdNodes(e: ChangeEvent<HTMLInputElement>) {
+    const selectedNode = e.currentTarget.value
+    const filteredNodes = nodes.filter(node => true)
+    setFilteredNodes(filteredNodes)
+  }
+
   return (
     <>
       <div>
@@ -447,6 +454,7 @@ function Cytoscape() {
                       <Autocomplete
                         id='combo-box-demo'
                         options={groupNodes}
+                        onInputChange={filterdNodes}
                         sx={{ width: 'auto' }}
                         renderInput={params => <TextField {...params} label='グループ' />}
                       />
