@@ -519,7 +519,7 @@ function Cytoscape() {
             </Grid>
             <Grid item xs={12} sx={{ flex: 1 }}>
               <Box sx={{ padding: 0, height: '100%' }}>
-                <DataTableWithFilter />
+                <DataTableWithFilter nodes={nodes} />
               </Box>
             </Grid>
           </Grid>

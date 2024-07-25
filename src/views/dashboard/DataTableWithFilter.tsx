@@ -26,19 +26,24 @@ const initialRows = [
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
+  { field: 'code', headerName: 'システムコード', width: 90 },
+  { field: 'subcode', headerName: 'サブシステムコード', width: 90 },
   { field: 'name', headerName: 'Name', width: 150 },
-  { field: 'age', headerName: 'Age', width: 110 }
+  { field: 'type', headerName: 'タイプ', width: 90 },
+  { field: 'parent', headerName: '親ノード', width: 90 }
 ]
 
-const DataTableWithFilter = () => {
-  const [rows, setRows] = useState(initialRows)
+const DataTableWithFilter = (props: any) => {
+  console.log(props)
+  // const [rows, setRows] = useState(initialRows)
+  const [rows, setRows] = useState(props.nodes)
   const [filterText, setFilterText] = useState('')
 
   const handleFilterChange = event => {
     const value = event.target.value
     setFilterText(value)
 
-    const filteredRows = initialRows.filter(row => {
+    const filteredRows = props.nodes.filter(row => {
       const paramList: string[] = Object.keys(row)
       for (let index = 0; index < paramList.length; index++) {
         const param = paramList[index]
@@ -61,7 +66,7 @@ const DataTableWithFilter = () => {
             style={{ marginBottom: 16 }}
           />
           <Box sx={{ height: '480px' }}>
-            <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection autoHeight />
+            <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection />
           </Box>
         </Grid>
       </CardContent>
