@@ -217,9 +217,19 @@ function Cytoscape() {
       }
     },
     {
-      selector: "node[type='device']",
+      selector: "node[type='group']",
       style: {
-        shape: 'barrel '
+        shape: 'round-rectangle',
+        backgroundColor: '#EEE',
+        label: 'data(label)',
+
+        'overlay-padding': '6px',
+        'z-index': '10',
+        //text props
+        'text-outline-color': '#4a56a6',
+        'text-outline-width': '2px',
+        color: 'white',
+        fontSize: 20
       }
     },
     {
@@ -227,6 +237,12 @@ function Cytoscape() {
       style: {
         'background-color': '#FFF',
         shape: 'round-rectangle'
+      }
+    },
+    {
+      selector: "node[type='app']",
+      style: {
+        shape: 'barrel'
       }
     },
 
