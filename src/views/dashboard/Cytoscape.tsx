@@ -325,6 +325,28 @@ function Cytoscape() {
                       console.log('EVT', cy)
                       var popup = document.getElementById('popup')
 
+                      // node,edgeを選択状態にする
+                      // // すべてのノードのIDを取得する
+                      // cy.nodes().forEach(function (node) {
+                      //   console.log(node.id())
+                      // })
+
+                      // // すべてのエッジのIDを取得する
+                      // cy.edges().forEach(function (edge) {
+                      //   console.log(edge.id())
+                      // })
+                      // cy.getElementById('s1').select()
+                      // cy.getElementById('s2').select()
+                      // cy.getElementById('s3').select()
+                      // cy.getElementById('s4').select()
+                      // 複数のノードやエッジを選択状態にする
+                      // cy.batch(function () {
+                      //   cy.getElementById('s1').select()
+                      //   cy.getElementById('s2').select()
+                      //   cy.getElementById('s3').select()
+                      //   cy.getElementById('s4').select()
+                      // })
+
                       cy.on('mouseover', 'node', evt => {
                         // console.log('mouseover.evt', evt)
                         // console.log('mouseover.evt.target', evt.target)
