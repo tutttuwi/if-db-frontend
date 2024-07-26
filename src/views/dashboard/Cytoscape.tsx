@@ -66,6 +66,7 @@ function Cytoscape() {
   const [appNodes, setAppNodes] = useState(Array)
   const [filteredNodes, setFilteredNodes] = useState(Array)
   const [edges, setEdges] = useState([])
+  const [ifs, setIfs] = useState([])
   // データ取得
   // axios.get('http://localhost:4001/api/nodes').then(result => {
   //   console.log(result.data)
@@ -161,6 +162,21 @@ function Cytoscape() {
         setGraphData([].concat(wrapCytoscapeData(ret1.data), wrapCytoscapeData(ret2.data)))
         setLoading(false)
       })
+    })
+    // 機能情報取得
+    axios.get('http://localhost:4001/api/ifs').then(retIfs => {
+      console.log('retIfs.data', retIfs.data)
+      setIfs(
+        retIfs.data.map((n: any) => {
+          n.value = n.name
+          n.label = n.name
+          return n
+        })
+      )
+      setTimeout(() => {
+        console.log('[ifs]', ifs)
+        console.log('[nodes]', nodes)
+      }, 5000)
     })
   }, [])
 
@@ -545,8 +561,8 @@ function Cytoscape() {
                   }}
                 />
                 <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
-                  <Grid container>
-                    <Grid item xs={4}>
+                  <Grid container sx={{ mb: 2, justifyContent: 'space-between' }}>
+                    <Grid item xs={4} sx={{ width: '100px' }}>
                       <Autocomplete
                         id='combo-box-demo'
                         options={groupNodes}
@@ -572,12 +588,22 @@ function Cytoscape() {
                       />
                     </Grid>
                   </Grid>
+                  <Grid container>
+                    <Grid item xs={12}>
+                      <Autocomplete
+                        id='combo-box-demo'
+                        options={ifs}
+                        sx={{ width: 'auto' }}
+                        renderInput={params => <TextField {...params} label='インターフェース' />}
+                      />
+                    </Grid>
+                  </Grid>
                 </CardContent>
               </Card>
             </Grid>
             <Grid item xs={12} sx={{ flex: 1 }}>
               <Box sx={{ padding: 0, height: '100%' }}>
-                <DataTableWithFilter nodes={nodes} />
+                <DataTableWithFilter ifs={ifs} />
               </Box>
             </Grid>
           </Grid>

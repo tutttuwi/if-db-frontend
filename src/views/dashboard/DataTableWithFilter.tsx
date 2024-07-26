@@ -24,26 +24,37 @@ const initialRows = [
   { id: 4, name: 'Bob Brown', age: 40 }
 ]
 
+// const columns = [
+//   { field: 'id', headerName: 'ID', width: 90 },
+//   { field: 'code', headerName: 'システムコード', width: 90 },
+//   { field: 'subcode', headerName: 'サブシステムコード', width: 90 },
+//   { field: 'name', headerName: 'Name', width: 150 },
+//   { field: 'type', headerName: 'タイプ', width: 90 },
+//   { field: 'parent', headerName: '親ノード', width: 90 }
+// ]
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
-  { field: 'code', headerName: 'システムコード', width: 90 },
-  { field: 'subcode', headerName: 'サブシステムコード', width: 90 },
-  { field: 'name', headerName: 'Name', width: 150 },
   { field: 'type', headerName: 'タイプ', width: 90 },
-  { field: 'parent', headerName: '親ノード', width: 90 }
+  { field: 'name_id', headerName: 'インターフェースID', width: 150 },
+  { field: 'name', headerName: 'インターフェース名', width: 150 },
+  { field: 'endpoint', headerName: 'エンドポイント', width: 150 },
+  { field: 'status', headerName: 'ステータス', width: 90 },
+  { field: 'doc', headerName: 'ドキュメントリンク', width: 90 },
+  { field: 'description', headerName: '詳細説明', width: 150 },
+  { field: 'misc', headerName: '備考', width: 150 }
 ]
 
 const DataTableWithFilter = (props: any) => {
   console.log(props)
   // const [rows, setRows] = useState(initialRows)
-  const [rows, setRows] = useState(props.nodes)
+  const [rows, setRows] = useState(props.ifs)
   const [filterText, setFilterText] = useState('')
 
   const handleFilterChange = event => {
     const value = event.target.value
     setFilterText(value)
 
-    const filteredRows = props.nodes.filter(row => {
+    const filteredRows = props.ifs.filter(row => {
       const paramList: string[] = Object.keys(row)
       for (let index = 0; index < paramList.length; index++) {
         const param = paramList[index]
@@ -57,7 +68,7 @@ const DataTableWithFilter = (props: any) => {
   return (
     <Card style={{ height: '100%' }}>
       <CardContent>
-        <Grid style={{ height: '400px' }}>
+        <Grid style={{ height: '300px' }}>
           <TextField
             label='検索'
             variant='outlined'
@@ -65,7 +76,7 @@ const DataTableWithFilter = (props: any) => {
             onChange={handleFilterChange}
             style={{ marginBottom: 16 }}
           />
-          <Box sx={{ height: '480px' }}>
+          <Box sx={{ height: '420px' }}>
             <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection />
           </Box>
         </Grid>
