@@ -80,6 +80,37 @@ function Cytoscape() {
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
 
+  // localStorageから位置データを取得する関数
+  function getStoredPositions() {
+    return JSON.parse(localStorage.getItem('nodePositions')) || {}
+  }
+
+  // localStorageに位置データを保存する関数
+  function storePositions(positions: any) {
+    localStorage.setItem('nodePositions', JSON.stringify(positions))
+  }
+
+  // ノードの位置をlocalStorageから設定する関数
+  function applyStoredPositions(elements, storedPositions) {
+    let ret: Array<any> = []
+    elements.forEach((element: any) => {
+      if (storedPositions[element.id]) {
+        ret.push({ data: element, position: storedPositions[element.id] })
+        // element.position = storedPositions[element.id]
+      }
+    })
+    return ret
+    // setNodes(elements)
+  }
+
+  // if (!storedPositions) {
+  //   // ノードの位置をlocalStorageに保存
+  //   cy.nodes().forEach(function (node) {
+  //     storedPositions[node.id()] = node.position()
+  //   })
+  //   storePositions(storedPositions)
+  // }
+
   useEffect(() => {
     setLoading(true)
     axios.get('http://localhost:4001/api/nodes').then(ret1 => {
@@ -116,6 +147,16 @@ function Cytoscape() {
               return n
             })
         )
+
+        const storedPositions = getStoredPositions()
+
+        // ノードの位置をlocalStorageから適用
+        const ret1ApplyPosition = applyStoredPositions(ret1.data, storedPositions)
+        console.log('ret1ApplyPosition.data', ret1ApplyPosition)
+        // const ret2Wrapped = [];
+        // ret2.data.forEach(el=>{
+        //   ret2Wrapped.push({data: el});
+        // })
 
         setGraphData([].concat(wrapCytoscapeData(ret1.data), wrapCytoscapeData(ret2.data)))
         setLoading(false)
@@ -362,6 +403,23 @@ function Cytoscape() {
                       //   cy.getElementById('s3').select()
                       //   cy.getElementById('s4').select()
                       // })
+
+                      // cy.on('grab', 'node', function (event) {
+                      //   event.target.ungrabify()
+                      // })
+
+                      cy.nodes().forEach(function (node) {
+                        // 配置されたnode位置を取得
+                        console.log(node.position())
+                      })
+                      const storedPositions = getStoredPositions()
+
+                      // ノードのドラッグイベントでlocalStorageを更新
+                      cy.on('dragfree', 'node', function (event) {
+                        var node = event.target
+                        storedPositions[node.id()] = node.position()
+                        storePositions(storedPositions)
+                      })
 
                       cy.on('mouseover', 'node', evt => {
                         // console.log('mouseover.evt', evt)
