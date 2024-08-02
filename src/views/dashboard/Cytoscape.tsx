@@ -64,9 +64,13 @@ function Cytoscape() {
   const [groupNodes, setGroupNodes] = useState(Array)
   const [systemNodes, setSystemNodes] = useState(Array)
   const [appNodes, setAppNodes] = useState(Array)
-  const [filteredNodes, setFilteredNodes] = useState(Array)
-  const [edges, setEdges] = useState([])
-  const [ifs, setIfs] = useState([])
+  const [filteredNodesTerm, setFilteredNodesTerm] = useState(Array)
+  const [filteredIfsTerm, setFilteredIfsTerm] = useState(Array)
+  const [edges, setEdges] = useState(Array)
+  const [ifs, setIfs] = useState(Array)
+  const [ifFilterTerm, setIfFilterTerm] = useState({})
+
+  const [cy, setCy] = useState({})
   // データ取得
   // axios.get('http://localhost:4001/api/nodes').then(result => {
   //   console.log(result.data)
@@ -114,55 +118,7 @@ function Cytoscape() {
 
   useEffect(() => {
     setLoading(true)
-    axios.get('http://localhost:4001/api/nodes').then(ret1 => {
-      console.log('ret1.data', ret1.data)
-      axios.get('http://localhost:4001/api/edges').then(ret2 => {
-        console.log('ret2.data', ret2.data)
-        setNodes(ret1.data)
-        setEdges(ret2.data)
-        const nodes: [] = ret1.data
-        setGroupNodes(
-          nodes
-            .filter((n: any) => n.type === 'group')
-            .map((n: any) => {
-              n.value = n.name
-              return n
-            })
-        )
-        // setSystemNodes(nodes.filter((n: any) => n.type === 'system'))
-        setSystemNodes(
-          nodes
-            .filter((n: any) => n.type === 'system')
-            .map((n: any) => {
-              n.value = n.name
-              return n
-            })
-        )
 
-        // setAppNodes(nodes.filter((n: any) => n.type === 'app'))
-        setAppNodes(
-          nodes
-            .filter((n: any) => n.type === 'app')
-            .map((n: any) => {
-              n.value = n.name
-              return n
-            })
-        )
-
-        const storedPositions = getStoredPositions()
-
-        // ノードの位置をlocalStorageから適用
-        const ret1ApplyPosition = applyStoredPositions(ret1.data, storedPositions)
-        console.log('ret1ApplyPosition.data', ret1ApplyPosition)
-        // const ret2Wrapped = [];
-        // ret2.data.forEach(el=>{
-        //   ret2Wrapped.push({data: el});
-        // })
-
-        setGraphData([].concat(wrapCytoscapeData(ret1.data), wrapCytoscapeData(ret2.data)))
-        setLoading(false)
-      })
-    })
     // 機能情報取得
     axios.get('http://localhost:4001/api/ifs').then(retIfs => {
       console.log('retIfs.data', retIfs.data)
@@ -173,10 +129,72 @@ function Cytoscape() {
           return n
         })
       )
-      setTimeout(() => {
-        console.log('[ifs]', ifs)
-        console.log('[nodes]', nodes)
-      }, 5000)
+      // setTimeout(() => {
+      //   console.log('[ifs]', ifs)
+      //   console.log('[nodes]', nodes)
+      // }, 5000)
+
+      // ------------------------
+      axios.get('http://localhost:4001/api/nodes').then(ret1 => {
+        console.log('ret1.data', ret1.data)
+        axios.get('http://localhost:4001/api/edges').then(ret2 => {
+          console.log('ret2.data', ret2.data)
+          // CytoscapeJSで利用するため、source,targetを設定
+          console.log('[ifs]', ifs)
+          const addAppInfoEdges = ret2.data.map((json: any) => {
+            console.log('[json]', json)
+            json.source = retIfs.data.find((i: any) => i.id === json.src_if_id).node_id
+            json.target = retIfs.data.find((i: any) => i.id === json.dst_if_id).node_id
+            return json
+          })
+          console.log('[addAppInfoEdges]', addAppInfoEdges)
+          setNodes(ret1.data)
+          setEdges(addAppInfoEdges)
+
+          const nodes: [] = ret1.data
+          setGroupNodes(
+            nodes
+              .filter((n: any) => n.type === 'group')
+              .map((n: any) => {
+                n.value = n.name
+                return n
+              })
+          )
+          // setSystemNodes(nodes.filter((n: any) => n.type === 'system'))
+          setSystemNodes(
+            nodes
+              .filter((n: any) => n.type === 'system')
+              .map((n: any) => {
+                n.value = n.name
+                return n
+              })
+          )
+
+          // setAppNodes(nodes.filter((n: any) => n.type === 'app'))
+          setAppNodes(
+            nodes
+              .filter((n: any) => n.type === 'app')
+              .map((n: any) => {
+                n.value = n.name
+                return n
+              })
+          )
+
+          const storedPositions = getStoredPositions()
+
+          // ノードの位置をlocalStorageから適用
+          const ret1ApplyPosition = applyStoredPositions(ret1.data, storedPositions)
+          console.log('ret1ApplyPosition.data', ret1ApplyPosition)
+          // const ret2Wrapped = [];
+          // ret2.data.forEach(el=>{
+          //   ret2Wrapped.push({data: el});
+          // })
+
+          setGraphData([].concat(wrapCytoscapeData(ret1.data), wrapCytoscapeData(addAppInfoEdges)))
+          setLoading(false)
+        })
+      })
+      //-----------------
     })
   }, [])
 
@@ -339,10 +357,83 @@ function Cytoscape() {
     setNodeSpacing(Number(e.currentTarget.value))
   }
 
-  function filterdNodes(e: ChangeEvent<HTMLInputElement>) {
+  function filterIfs(e: ChangeEvent<HTMLInputElement>) {
+    const elId: string = e.currentTarget.dataset.id || ''
+    const elType: any = e.currentTarget.dataset.type
+    if (elId && elType) {
+      filteredIfsTerm[elType] = elId
+    }
+    console.log(e.currentTarget)
+    console.log(e.currentTarget.dataset.id)
+    console.log('filteredIfsTerm', filteredIfsTerm)
     const selectedNode = e.currentTarget.value
     const filteredNodes = nodes.filter(node => true)
-    setFilteredNodes(filteredNodes)
+
+    // TODO: 選択されたnodes情報を下にCytoscape図をActiveにしたい
+    // -----------------------------------------------------------------
+    // console.log('[cy]', cy)
+    // // cy.getElementById(elId).select()
+    // const filterTerm = []
+    // for (const key in Object.keys(filteredIfsTerm)) {
+    //   const value = filteredIfsTerm[key]
+    //   filterTerm.push(value)
+    // }
+    // // cy.nodes().forEach(node => {
+    // //   node.unselect()
+    // // })
+    // filterTerm.forEach(value => {
+    //   cy.getElementById(value).select()
+    // })
+
+    // cy.edges().forEach(function (edge) {
+    //   console.log(edge.id())
+    // })
+    // cy.getElementById('s1').select()
+    // cy.getElementById('s2').select()
+    // cy.getElementById('s3').select()
+    // cy.getElementById('s4').select()
+    // 複数のノードやエッジを選択状態にする
+    // cy.batch(function () {
+    //   cy.getElementById('s1').select()
+    //   cy.getElementById('s2').select()
+    //   cy.getElementById('s3').select()
+    //   cy.getElementById('s4').select()
+    // })
+    // -----------------------------------------------------------------
+
+    console.log('[ifs]', ifs)
+    // setFilteredNodes(filteredNodes)
+    const targetAppList = findTargetApp(elId)
+    const filteredEdges = edges.filter((edgesInfo: any) => {
+      return targetAppList.includes(edgesInfo.source) || targetAppList.includes(edgesInfo.target)
+    })
+    console.log('[filteredEdges]', filteredEdges)
+    const srcIfIdList = filteredEdges.map((edge: any) => edge.src_if_id)
+    const dstIfIdList = filteredEdges.map((edge: any) => edge.dst_if_id)
+    const ifFilterTerm = {
+      srcIfIdList: srcIfIdList,
+      dstIfIdList: dstIfIdList
+    }
+    setIfFilterTerm(ifFilterTerm)
+    // const filteredIfs = ifs.filter((ifItem: any) => {
+    //   return srcIfIdList.includes(ifItem.id) || dstIfIdList.includes(ifItem.id)
+    // })
+    // console.log('[filteredIfs]', filteredIfs)
+    // setIfs(filteredIfs)
+  }
+
+  function findTargetApp(elId: String) {
+    const targetAppList = []
+    nodes.forEach(node => {
+      if (node.parent === elId) {
+        if (node.type === 'app') {
+          targetAppList.push(node.id)
+        } else {
+          targetAppList.concat(findTargetApp(node.id))
+        }
+      }
+    })
+    return targetAppList
   }
 
   return (
@@ -394,6 +485,7 @@ function Cytoscape() {
                     stylesheet={styleSheet}
                     cy={cy => {
                       myCyRef = cy
+                      setCy(cy)
 
                       console.log('EVT', cy)
                       var popup = document.getElementById('popup')
@@ -564,26 +656,46 @@ function Cytoscape() {
                   <Grid container sx={{ mb: 2, justifyContent: 'space-between' }}>
                     <Grid item xs={4} sx={{ width: '100px' }}>
                       <Autocomplete
-                        id='combo-box-demo'
+                        id='combo-box-group'
                         options={groupNodes}
-                        onInputChange={filterdNodes}
-                        sx={{ width: 'auto' }}
+                        getOptionLabel={(option: any) => option.label}
+                        renderOption={(props, option: any) => (
+                          <li {...props} data-id={option.id} data-type='group'>
+                            {option.label}
+                          </li>
+                        )}
+                        onInputChange={filterIfs}
+                        sx={{ margin: '0 3px 0 0px' }}
                         renderInput={params => <TextField {...params} label='グループ' />}
                       />
                     </Grid>
                     <Grid item xs={4}>
                       <Autocomplete
-                        id='combo-box-demo'
+                        id='combo-box-system'
                         options={systemNodes}
-                        sx={{ width: 'auto' }}
+                        getOptionLabel={(option: any) => option.label}
+                        renderOption={(props, option: any) => (
+                          <li {...props} data-id={option.id} data-type='system'>
+                            {option.label}
+                          </li>
+                        )}
+                        onInputChange={filterIfs}
+                        sx={{ margin: '0 3px 0 3px' }}
                         renderInput={params => <TextField {...params} label='システム' />}
                       />
                     </Grid>
                     <Grid item xs={4}>
                       <Autocomplete
-                        id='combo-box-demo'
+                        id='combo-box-app'
                         options={appNodes}
-                        sx={{ width: 'auto' }}
+                        getOptionLabel={(option: any) => option.label}
+                        renderOption={(props, option: any) => (
+                          <li {...props} data-id={option.id} data-type='app'>
+                            {option.label}
+                          </li>
+                        )}
+                        onInputChange={filterIfs}
+                        sx={{ margin: '0 0px 0 3px' }}
                         renderInput={params => <TextField {...params} label='アプリ' />}
                       />
                     </Grid>
@@ -591,7 +703,7 @@ function Cytoscape() {
                   <Grid container>
                     <Grid item xs={12}>
                       <Autocomplete
-                        id='combo-box-demo'
+                        id='combo-box-if'
                         options={ifs}
                         sx={{ width: 'auto' }}
                         renderInput={params => <TextField {...params} label='インターフェース' />}
@@ -603,7 +715,7 @@ function Cytoscape() {
             </Grid>
             <Grid item xs={12} sx={{ flex: 1 }}>
               <Box sx={{ padding: 0, height: '100%' }}>
-                <DataTableWithFilter ifs={ifs} />
+                <DataTableWithFilter ifs={ifs} ifFilterTerm={ifFilterTerm} />
               </Box>
             </Grid>
           </Grid>

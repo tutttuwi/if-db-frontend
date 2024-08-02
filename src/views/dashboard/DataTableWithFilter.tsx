@@ -12,7 +12,7 @@ import TableCell from '@mui/material/TableCell'
 import Typography from '@mui/material/Typography'
 import TableContainer from '@mui/material/TableContainer'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 import { TextField } from '@mui/material'
 import Grid from '@mui/material/Grid'
@@ -23,6 +23,8 @@ const initialRows = [
   { id: 3, name: 'Alice Johnson', age: 35 },
   { id: 4, name: 'Bob Brown', age: 40 }
 ]
+
+// TODO: フィルター処理リファクタリング
 
 // const columns = [
 //   { field: 'id', headerName: 'ID', width: 90 },
@@ -45,13 +47,14 @@ const columns = [
 ]
 
 const DataTableWithFilter = (props: any) => {
-  console.log(props)
+  console.log('[props]', props)
   // const [rows, setRows] = useState(initialRows)
   const [rows, setRows] = useState(props.ifs)
   const [filterText, setFilterText] = useState('')
+  const filterChange = useRef<HTMLInputElement>(null)
 
-  const handleFilterChange = event => {
-    const value = event.target.value
+  const handleFilterChange = (event: any, text: any = '') => {
+    const value = event ? event.target.value : text
     setFilterText(value)
 
     const filteredRows = props.ifs.filter(row => {
@@ -62,14 +65,32 @@ const DataTableWithFilter = (props: any) => {
         if (matched) return true
       }
     })
-    setRows(filteredRows)
+    // setRows(filteredRows)
+    filterIfsTerm(filteredRows)
   }
+  const filterIfsTerm = (ifs: Array<any> = props.ifs) => {
+    const srcIfIdList = props.ifFilterTerm.srcIfIdList || []
+    const dstIfIdList = props.ifFilterTerm.dstIfIdList || []
+    if (srcIfIdList.length || dstIfIdList.length) {
+      const filteredIfs = ifs.filter((ifItem: any) => {
+        return srcIfIdList.includes(ifItem.id) || dstIfIdList.includes(ifItem.id)
+      })
+      setRows(filteredIfs)
+    } else {
+      setRows(ifs)
+    }
+  }
+  useEffect(() => {
+    handleFilterChange(null, filterChange?.current?.value)
+    filterIfsTerm()
+  }, [props])
 
   return (
     <Card style={{ height: '100%' }}>
       <CardContent>
         <Grid style={{ height: '300px' }}>
           <TextField
+            ref={filterChange}
             label='検索'
             variant='outlined'
             value={filterText}
@@ -77,7 +98,7 @@ const DataTableWithFilter = (props: any) => {
             style={{ marginBottom: 16 }}
           />
           <Box sx={{ height: '420px' }}>
-            <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection />
+            <DataGrid rows={rows} data-ifs={props.ifs} columns={columns} pageSize={5} checkboxSelection />
           </Box>
         </Grid>
       </CardContent>
