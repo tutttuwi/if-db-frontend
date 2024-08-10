@@ -66,9 +66,11 @@ function Cytoscape() {
   const [appNodes, setAppNodes] = useState(Array)
   const [filteredNodesTerm, setFilteredNodesTerm] = useState(Array)
   const [filteredIfsTerm, setFilteredIfsTerm] = useState(Array)
+  const [filterTerm, setFilterTerm] = useState({})
   const [edges, setEdges] = useState(Array)
   const [ifs, setIfs] = useState(Array)
   const [ifFilterTerm, setIfFilterTerm] = useState({})
+  const [targetAppList, setTargetAppList] = useState(Array)
 
   const [cy, setCy] = useState({})
   // データ取得
@@ -197,6 +199,21 @@ function Cytoscape() {
       //-----------------
     })
   }, [])
+
+  useEffect(() => {
+    console.log('[useEffect] START <filterTerm>')
+    const groupNodesSetting = [...groupNodes]
+    const systemNodesSetting = [...systemNodes]
+    const appNodesSetting = [...appNodes]
+    const groupFilteredSystemNodeSetting = systemNodesSetting.filter(sn => {
+      sn.parent === filterTerm.group
+    })
+    const groupFilteredAppNodeSetting = groupFilteredSystemNodeSetting.filter(sn => {
+      sn.parent === filterTerm.group
+    })
+
+    console.log('[useEffect] END <filterTerm>')
+  }, [filterTerm.group, filterTerm.system, filterTerm.app])
 
   if (error) return <pre>{JSON.stringify(error, null, 2)}</pre>
   if (loading) return <h1>loading...</h1>
@@ -357,19 +374,25 @@ function Cytoscape() {
     setNodeSpacing(Number(e.currentTarget.value))
   }
 
-  function filterIfs(e: ChangeEvent<HTMLInputElement>) {
-    const elId: string = e.currentTarget.dataset.id || ''
-    const elType: any = e.currentTarget.dataset.type
+  function filterIfs(e: ChangeEvent<HTMLInputElement>, elType: string) {
+    console.log('[e]', e)
+    const elId: string = e.currentTarget.dataset.id
+    // const elType: any = e.currentTarget.dataset.type
+    console.log('[elId]', elId)
+    console.log('[elType]', elType)
     if (elId && elType) {
-      filteredIfsTerm[elType] = elId
+      filterTerm[elType] = elId
+    } else {
+      filterTerm[elType] = ''
     }
     console.log(e.currentTarget)
     console.log(e.currentTarget.dataset.id)
-    console.log('filteredIfsTerm', filteredIfsTerm)
+    setFilterTerm(filterTerm)
+    console.log('filterTerm', filterTerm)
     const selectedNode = e.currentTarget.value
     const filteredNodes = nodes.filter(node => true)
 
-    // TODO: 選択されたnodes情報を下にCytoscape図をActiveにしたい
+    // TODO: 選択されたnodes情報を基にCytoscape図をActiveにしたい
     // -----------------------------------------------------------------
     // console.log('[cy]', cy)
     // // cy.getElementById(elId).select()
@@ -403,18 +426,21 @@ function Cytoscape() {
 
     console.log('[ifs]', ifs)
     // setFilteredNodes(filteredNodes)
-    const targetAppList = findTargetApp(elId)
-    const filteredEdges = edges.filter((edgesInfo: any) => {
-      return targetAppList.includes(edgesInfo.source) || targetAppList.includes(edgesInfo.target)
-    })
-    console.log('[filteredEdges]', filteredEdges)
-    const srcIfIdList = filteredEdges.map((edge: any) => edge.src_if_id)
-    const dstIfIdList = filteredEdges.map((edge: any) => edge.dst_if_id)
-    const ifFilterTerm = {
-      srcIfIdList: srcIfIdList,
-      dstIfIdList: dstIfIdList
-    }
-    setIfFilterTerm(ifFilterTerm)
+    // const targetAppList = findTargetApp(elId)
+    // console.log('[targetAppList]', targetAppList)
+    // console.log('[edges]', edges)
+    // setTargetAppList(targetAppList)
+    // const filteredEdges = edges.filter((edgesInfo: any) => {
+    //   return targetAppList.includes(edgesInfo.source) || targetAppList.includes(edgesInfo.target)
+    // })
+    // console.log('[filteredEdges]', filteredEdges)
+    // const srcIfIdList = filteredEdges.map((edge: any) => edge.src_if_id)
+    // const dstIfIdList = filteredEdges.map((edge: any) => edge.dst_if_id)
+    // const ifFilterTerm = {
+    //   srcIfIdList: srcIfIdList,
+    //   dstIfIdList: dstIfIdList
+    // }
+    // setIfFilterTerm(ifFilterTerm)
     // const filteredIfs = ifs.filter((ifItem: any) => {
     //   return srcIfIdList.includes(ifItem.id) || dstIfIdList.includes(ifItem.id)
     // })
@@ -422,19 +448,24 @@ function Cytoscape() {
     // setIfs(filteredIfs)
   }
 
-  function findTargetApp(elId: String) {
-    const targetAppList = []
-    nodes.forEach(node => {
-      if (node.parent === elId) {
-        if (node.type === 'app') {
-          targetAppList.push(node.id)
-        } else {
-          targetAppList.concat(findTargetApp(node.id))
-        }
-      }
-    })
-    return targetAppList
-  }
+  // function findTargetApp(elId: String) {
+  //   let targetAppList = []
+  //   nodes.forEach(node => {
+  //     // console.log('[findTargetApp]', node)
+  //     if (node.parent === elId) {
+  //       if (node.type === 'app') {
+  //         console.log('[findTargetApp]>app', elId)
+  //         targetAppList.push(node.id)
+  //       } else {
+  //         console.log('[findTargetApp]>app以外 START', node.id, elId)
+  //         targetAppList = targetAppList.concat(findTargetApp(node.id))
+  //         console.log('[findTargetApp]>app以外 END', targetAppList, elId)
+  //       }
+  //     }
+  //   })
+  //   console.log('[findTargetApp]>targetAppList', targetAppList, elId)
+  //   return targetAppList
+  // }
 
   return (
     <>
@@ -518,7 +549,7 @@ function Cytoscape() {
 
                       cy.nodes().forEach(function (node) {
                         // 配置されたnode位置を取得
-                        console.log(node.position())
+                        // console.log(node.position())
                       })
                       const storedPositions = getStoredPositions()
 
@@ -664,9 +695,13 @@ function Cytoscape() {
                             {option.label}
                           </li>
                         )}
-                        onInputChange={filterIfs}
+                        onChange={(event, value, reason) => {
+                          // if (reason === 'clear') {
+                          filterIfs(event, 'group')
+                          // }
+                        }}
                         sx={{ margin: '0 3px 0 0px' }}
-                        renderInput={params => <TextField {...params} label='グループ' />}
+                        renderInput={params => <TextField {...params} label='グループ' data-type='group' />}
                       />
                     </Grid>
                     <Grid item xs={4}>
@@ -679,7 +714,11 @@ function Cytoscape() {
                             {option.label}
                           </li>
                         )}
-                        onInputChange={filterIfs}
+                        onChange={(event, value, reason) => {
+                          // if (reason === 'clear') {
+                          filterIfs(event, 'system')
+                          // }
+                        }}
                         sx={{ margin: '0 3px 0 3px' }}
                         renderInput={params => <TextField {...params} label='システム' />}
                       />
@@ -694,7 +733,11 @@ function Cytoscape() {
                             {option.label}
                           </li>
                         )}
-                        onInputChange={filterIfs}
+                        onChange={(event, value, reason) => {
+                          // if (reason === 'clear') {
+                          filterIfs(event, 'app')
+                          // }
+                        }}
                         sx={{ margin: '0 0px 0 3px' }}
                         renderInput={params => <TextField {...params} label='アプリ' />}
                       />
@@ -715,7 +758,13 @@ function Cytoscape() {
             </Grid>
             <Grid item xs={12} sx={{ flex: 1 }}>
               <Box sx={{ padding: 0, height: '100%' }}>
-                <DataTableWithFilter ifs={ifs} ifFilterTerm={ifFilterTerm} />
+                <DataTableWithFilter
+                  ifs={ifs}
+                  filterTerm={filterTerm}
+                  targetAppList={targetAppList}
+                  edges={edges}
+                  nodes={nodes}
+                />
               </Box>
             </Grid>
           </Grid>

@@ -69,21 +69,49 @@ const DataTableWithFilter = (props: any) => {
     filterIfsTerm(filteredRows)
   }
   const filterIfsTerm = (ifs: Array<any> = props.ifs) => {
-    const srcIfIdList = props.ifFilterTerm.srcIfIdList || []
-    const dstIfIdList = props.ifFilterTerm.dstIfIdList || []
-    if (srcIfIdList.length || dstIfIdList.length) {
+    let targetAppList: Array<any> = []
+    Object.keys(props.filterTerm).forEach(termKey => {
+      const findedTargetAppList = findTargetApp(props.filterTerm[termKey])
+      targetAppList = duplicatedArr(targetAppList, findedTargetAppList)
+    })
+    // const targetAppList = findTargetApp(elId)
+    console.log('[targetAppList]', targetAppList)
+    // console.log('[edges]', edges)
+    // setTargetAppList(targetAppList)
+
+    // const targetAppList = props.targetAppList
+    const filteredEdges = props.edges.filter((edgesInfo: any) => {
+      return targetAppList.includes(edgesInfo.source) || targetAppList.includes(edgesInfo.target)
+    })
+    console.log('[filteredEdges]', filteredEdges)
+    const ifFilterTerm = {
+      srcIfIdList: filteredEdges.map((edge: any) => edge.src_if_id),
+      dstIfIdList: filteredEdges.map((edge: any) => edge.dst_if_id)
+    }
+
+    const srcIfIdList = ifFilterTerm.srcIfIdList || []
+    const dstIfIdList = ifFilterTerm.dstIfIdList || []
+    console.log('[props.filterTerm]', props.filterTerm)
+    const hasFilterTerm = Object.keys(props.filterTerm).find(e => props.filterTerm[e] !== '') // フィルター条件が設定されているかどうか
+    console.log('[hasFilterTerm]', hasFilterTerm)
+    if (srcIfIdList.length || dstIfIdList.length || hasFilterTerm) {
+      // const filteredIfs = ifs.filter((ifItem: any) => {
+      //   return srcIfIdList.includes(ifItem.id) || dstIfIdList.includes(ifItem.id)
+      // })
       const filteredIfs = ifs.filter((ifItem: any) => {
-        return srcIfIdList.includes(ifItem.id) || dstIfIdList.includes(ifItem.id)
+        return targetAppList.includes(ifItem.node_id)
       })
       setRows(filteredIfs)
     } else {
       setRows(ifs)
     }
   }
+
+  
   useEffect(() => {
     handleFilterChange(null, filterChange?.current?.value)
     filterIfsTerm()
-  }, [props])
+  }, [props.filterTerm])
 
   return (
     <Card style={{ height: '100%' }}>
