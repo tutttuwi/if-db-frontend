@@ -26,14 +26,6 @@ const initialRows = [
 
 // TODO: フィルター処理リファクタリング
 
-// const columns = [
-//   { field: 'id', headerName: 'ID', width: 90 },
-//   { field: 'code', headerName: 'システムコード', width: 90 },
-//   { field: 'subcode', headerName: 'サブシステムコード', width: 90 },
-//   { field: 'name', headerName: 'Name', width: 150 },
-//   { field: 'type', headerName: 'タイプ', width: 90 },
-//   { field: 'parent', headerName: '親ノード', width: 90 }
-// ]
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   { field: 'type', headerName: 'タイプ', width: 90 },
@@ -69,37 +61,11 @@ const DataTableWithFilter = (props: any) => {
     filterIfsTerm(filteredRows)
   }
   const filterIfsTerm = (ifs: Array<any> = props.ifs) => {
-    let targetAppList: Array<any> = []
-    Object.keys(props.filterTerm).forEach(termKey => {
-      const findedTargetAppList = findTargetApp(props.filterTerm[termKey])
-      targetAppList = duplicatedArr(targetAppList, findedTargetAppList)
-    })
-    // const targetAppList = findTargetApp(elId)
-    console.log('[targetAppList]', targetAppList)
-    // console.log('[edges]', edges)
-    // setTargetAppList(targetAppList)
-
-    // const targetAppList = props.targetAppList
-    const filteredEdges = props.edges.filter((edgesInfo: any) => {
-      return targetAppList.includes(edgesInfo.source) || targetAppList.includes(edgesInfo.target)
-    })
-    console.log('[filteredEdges]', filteredEdges)
-    const ifFilterTerm = {
-      srcIfIdList: filteredEdges.map((edge: any) => edge.src_if_id),
-      dstIfIdList: filteredEdges.map((edge: any) => edge.dst_if_id)
-    }
-
-    const srcIfIdList = ifFilterTerm.srcIfIdList || []
-    const dstIfIdList = ifFilterTerm.dstIfIdList || []
-    console.log('[props.filterTerm]', props.filterTerm)
-    const hasFilterTerm = Object.keys(props.filterTerm).find(e => props.filterTerm[e] !== '') // フィルター条件が設定されているかどうか
+    const hasFilterTerm = Object.keys(props.filterNodeCondition).find(e => props.filterNodeCondition[e] !== '') // フィルター条件が設定されているかどうか
     console.log('[hasFilterTerm]', hasFilterTerm)
-    if (srcIfIdList.length || dstIfIdList.length || hasFilterTerm) {
-      // const filteredIfs = ifs.filter((ifItem: any) => {
-      //   return srcIfIdList.includes(ifItem.id) || dstIfIdList.includes(ifItem.id)
-      // })
+    if (hasFilterTerm) {
       const filteredIfs = ifs.filter((ifItem: any) => {
-        return targetAppList.includes(ifItem.node_id)
+        return props.targetAppList.includes(ifItem.node_id)
       })
       setRows(filteredIfs)
     } else {
@@ -107,11 +73,13 @@ const DataTableWithFilter = (props: any) => {
     }
   }
 
-  
+  /**
+   * 検索条件が変更されたら実行
+   */
   useEffect(() => {
     handleFilterChange(null, filterChange?.current?.value)
     filterIfsTerm()
-  }, [props.filterTerm])
+  }, [props.filterNodeCondition])
 
   return (
     <Card style={{ height: '100%' }}>

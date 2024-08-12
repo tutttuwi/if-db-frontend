@@ -1,50 +1,18 @@
 // ** MUI Imports
-import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
-import Avatar from '@mui/material/Avatar'
 import CardHeader from '@mui/material/CardHeader'
 import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
-import Autocomplete from '@mui/material/Autocomplete'
-import TextField from '@mui/material/TextField'
 
-// ** Icons Imports
-import TrendingUp from 'mdi-material-ui/TrendingUp'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
-import DotsVertical from 'mdi-material-ui/DotsVertical'
-import CellphoneLink from 'mdi-material-ui/CellphoneLink'
-import AccountOutline from 'mdi-material-ui/AccountOutline'
-
-// ** Demo Components Imports
-import Table from 'src/views/dashboard/Table'
-import DataTableWithFilter from 'src/views/dashboard/DataTableWithFilter'
-
-// ** DB Access
-import connectDB from 'src/db/ifdb/db'
-import { NodeModel } from 'src/db/models/IFDBNode'
-// var NodeSchema = model.NodeSchema
-// import IFDBNode from 'src/db/models/IFDBNode'
-// ;async () => {
-//   await connectDB()
-//   const node = await IFDBNode.find()
-//   console.log(node)
-// }
-// import { test } from 'src/db/nodesApi'
-// test()
 // ** API Access
 import axios from 'axios'
 
 import React, { useState, ChangeEvent, useEffect } from 'react'
-import dynamic from 'next/dynamic'
 import CytoscapeComponent from 'react-cytoscapejs'
-// const CytoscapeComponent = dynamic(() => import('react-cytoscapejs'), { ssr: false })
-import { ElementDefinition } from 'cytoscape'
 import cys from 'cytoscape'
 /**@ts-ignore */
 import cola from 'cytoscape-cola'
-import Link from 'next/link'
 cys.use(cola)
 
 function wrapCytoscapeData(ary: Array<Object>): [] {
@@ -54,38 +22,35 @@ function wrapCytoscapeData(ary: Array<Object>): [] {
   return ret
 }
 
-function Cytoscape() {
+function Cytoscape(props: any) {
+  // const graphData = props.graphData || {}
+  const nodes = props.nodes || []
+  const edges = props.edges || []
+  // =============================================
+  // state変数定義
+  // =============================================
+  // Cytoscape図 表示幅調整 デフォルト値入力しているが、最大表示などをしたい場合変更できるようにState変数化
   const [width, setWith] = useState('100%')
   const [height, setHeight] = useState('70vh')
   const [base64png, setBase64png] = useState('')
   const [nodeSpacing, setNodeSpacing] = useState(50)
 
-  const [nodes, setNodes] = useState([])
+  // const [nodes, setNodes] = useState([])
   const [groupNodes, setGroupNodes] = useState(Array)
   const [systemNodes, setSystemNodes] = useState(Array)
   const [appNodes, setAppNodes] = useState(Array)
   const [filteredNodesTerm, setFilteredNodesTerm] = useState(Array)
   const [filteredIfsTerm, setFilteredIfsTerm] = useState(Array)
   const [filterTerm, setFilterTerm] = useState({})
-  const [edges, setEdges] = useState(Array)
+  // const [edges, setEdges] = useState(Array)
   const [ifs, setIfs] = useState(Array)
   const [ifFilterTerm, setIfFilterTerm] = useState({})
   const [targetAppList, setTargetAppList] = useState(Array)
 
   const [cy, setCy] = useState({})
-  // データ取得
-  // axios.get('http://localhost:4001/api/nodes').then(result => {
-  //   console.log(result.data)
-  // })
-  // axios.get('http://localhost:4001/api/edges').then(result => {
-  //   // console.log(result.data)
-  //   // setNodes(result.data)
-  //   // setEdges(result.data)
-  // })
   const [graphData, setGraphData] = useState({})
   const [data, setData] = useState()
   const [error, setError] = useState()
-  const [loading, setLoading] = useState(false)
 
   // localStorageから位置データを取得する関数
   function getStoredPositions() {
@@ -118,86 +83,11 @@ function Cytoscape() {
   //   storePositions(storedPositions)
   // }
 
+  /**
+   * 初期処理
+   */
   useEffect(() => {
-    setLoading(true)
-
-    // 機能情報取得
-    axios.get('http://localhost:4001/api/ifs').then(retIfs => {
-      console.log('retIfs.data', retIfs.data)
-      setIfs(
-        retIfs.data.map((n: any) => {
-          n.value = n.name
-          n.label = n.name
-          return n
-        })
-      )
-      // setTimeout(() => {
-      //   console.log('[ifs]', ifs)
-      //   console.log('[nodes]', nodes)
-      // }, 5000)
-
-      // ------------------------
-      axios.get('http://localhost:4001/api/nodes').then(ret1 => {
-        console.log('ret1.data', ret1.data)
-        axios.get('http://localhost:4001/api/edges').then(ret2 => {
-          console.log('ret2.data', ret2.data)
-          // CytoscapeJSで利用するため、source,targetを設定
-          console.log('[ifs]', ifs)
-          const addAppInfoEdges = ret2.data.map((json: any) => {
-            console.log('[json]', json)
-            json.source = retIfs.data.find((i: any) => i.id === json.src_if_id).node_id
-            json.target = retIfs.data.find((i: any) => i.id === json.dst_if_id).node_id
-            return json
-          })
-          console.log('[addAppInfoEdges]', addAppInfoEdges)
-          setNodes(ret1.data)
-          setEdges(addAppInfoEdges)
-
-          const nodes: [] = ret1.data
-          setGroupNodes(
-            nodes
-              .filter((n: any) => n.type === 'group')
-              .map((n: any) => {
-                n.value = n.name
-                return n
-              })
-          )
-          // setSystemNodes(nodes.filter((n: any) => n.type === 'system'))
-          setSystemNodes(
-            nodes
-              .filter((n: any) => n.type === 'system')
-              .map((n: any) => {
-                n.value = n.name
-                return n
-              })
-          )
-
-          // setAppNodes(nodes.filter((n: any) => n.type === 'app'))
-          setAppNodes(
-            nodes
-              .filter((n: any) => n.type === 'app')
-              .map((n: any) => {
-                n.value = n.name
-                return n
-              })
-          )
-
-          const storedPositions = getStoredPositions()
-
-          // ノードの位置をlocalStorageから適用
-          const ret1ApplyPosition = applyStoredPositions(ret1.data, storedPositions)
-          console.log('ret1ApplyPosition.data', ret1ApplyPosition)
-          // const ret2Wrapped = [];
-          // ret2.data.forEach(el=>{
-          //   ret2Wrapped.push({data: el});
-          // })
-
-          setGraphData([].concat(wrapCytoscapeData(ret1.data), wrapCytoscapeData(addAppInfoEdges)))
-          setLoading(false)
-        })
-      })
-      //-----------------
-    })
+    setGraphData([].concat(wrapCytoscapeData(nodes), wrapCytoscapeData(edges)))
   }, [])
 
   useEffect(() => {
@@ -214,23 +104,6 @@ function Cytoscape() {
 
     console.log('[useEffect] END <filterTerm>')
   }, [filterTerm.group, filterTerm.system, filterTerm.app])
-
-  if (error) return <pre>{JSON.stringify(error, null, 2)}</pre>
-  if (loading) return <h1>loading...</h1>
-  // if (!data) return null
-
-  // const layout = {
-  //   name: 'breadthfirst',
-  //   fit: true,
-  //   // circle: true,
-  //   directed: true,
-  //   padding: 50,
-  //   // spacingFactor: 1.5,
-  //   animate: true,
-  //   animationDuration: 1000,
-  //   avoidOverlap: true,
-  //   nodeDimensionsIncludeLabels: false,
-  // };
 
   const layout = {
     name: 'cola',
@@ -368,8 +241,6 @@ function Cytoscape() {
     }
   ]
 
-  let myCyRef
-
   const handleNodeSpacing = (e: ChangeEvent<HTMLInputElement>) => {
     setNodeSpacing(Number(e.currentTarget.value))
   }
@@ -469,307 +340,184 @@ function Cytoscape() {
 
   return (
     <>
-      <div>
-        {/* <h1>システム連携一覧</h1> */}
-        {/* TODO: ノードスペーシングおしゃれにする */}
-        {/* <input type='number' value={nodeSpacing} onChange={handleNodeSpacing} /> */}
-        {/* TODO: ダウンロードボタン実装 */}
-        {/* <a download='system-if.png' href={`${base64png}`} id='download'>
-          ダウンロード
-        </a> */}
-        <div id='popup' className='popup'></div>
-        <Grid container spacing={6}>
-          <Grid item xs={6} md={6}>
-            <Card>
-              <CardHeader
-                title='システム連携図'
-                action={
-                  <IconButton
-                    size='small'
-                    aria-label='settings'
-                    className='card-more-options'
-                    sx={{ color: 'text.secondary' }}
-                  >
-                    {/* <DotsVertical /> */}
-                  </IconButton>
-                }
-                titleTypographyProps={{
-                  sx: {
-                    mb: 2.5,
-                    lineHeight: '2rem !important',
-                    letterSpacing: '0.15px !important'
-                  }
+      <Grid item xs={6} md={6}>
+        <Card>
+          <CardHeader
+            title='システム連携図'
+            action={
+              <IconButton
+                size='small'
+                aria-label='settings'
+                className='card-more-options'
+                sx={{ color: 'text.secondary' }}
+              >
+                {/* <DotsVertical /> */}
+              </IconButton>
+            }
+            titleTypographyProps={{
+              sx: {
+                mb: 2.5,
+                lineHeight: '2rem !important',
+                letterSpacing: '0.15px !important'
+              }
+            }}
+          />
+          <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
+            <Grid container spacing={[5, 0]}>
+              <CytoscapeComponent
+                elements={CytoscapeComponent.normalizeElements(graphData)}
+                // pan={{ x: 200, y: 200 }}
+                style={{ width: width, height: height }}
+                zoomingEnabled={true}
+                maxZoom={3}
+                minZoom={0.1}
+                autounselectify={false}
+                boxSelectionEnabled={true}
+                layout={layout}
+                stylesheet={styleSheet}
+                cy={cy => {
+                  setCy(cy)
+
+                  console.log('EVT', cy)
+                  var popup = document.getElementById('popup')
+
+                  // node,edgeを選択状態にする
+                  // // すべてのノードのIDを取得する
+                  // cy.nodes().forEach(function (node) {
+                  //   console.log(node.id())
+                  // })
+
+                  // // すべてのエッジのIDを取得する
+                  // cy.edges().forEach(function (edge) {
+                  //   console.log(edge.id())
+                  // })
+                  // cy.getElementById('s1').select()
+                  // cy.getElementById('s2').select()
+                  // cy.getElementById('s3').select()
+                  // cy.getElementById('s4').select()
+                  // 複数のノードやエッジを選択状態にする
+                  // cy.batch(function () {
+                  //   cy.getElementById('s1').select()
+                  //   cy.getElementById('s2').select()
+                  //   cy.getElementById('s3').select()
+                  //   cy.getElementById('s4').select()
+                  // })
+
+                  // cy.on('grab', 'node', function (event) {
+                  //   event.target.ungrabify()
+                  // })
+
+                  cy.nodes().forEach(function (node) {
+                    // 配置されたnode位置を取得
+                    // console.log(node.position())
+                  })
+                  const storedPositions = getStoredPositions()
+
+                  // ノードのドラッグイベントでlocalStorageを更新
+                  cy.on('dragfree', 'node', function (event) {
+                    var node = event.target
+                    storedPositions[node.id()] = node.position()
+                    storePositions(storedPositions)
+                  })
+
+                  cy.on('mouseover', 'node', evt => {
+                    // console.log('mouseover.evt', evt)
+                    // console.log('mouseover.evt.target', evt.target)
+                    var node = evt.target
+                    // console.log(node)
+                    var position = evt.position
+                    // console.log('position', position)
+                    var data = node.data()
+                    if (popup && position && data.id) {
+                      popup.style.display = 'block'
+                      // canvasの左上に付ける
+                      // popup.style.left = position.x + 200 + 'px'
+                      // popup.style.top = position.y + 50 + 'px'
+                      popup.innerHTML =
+                        'システムID: ' +
+                        data.id +
+                        '<br>システム名: ' +
+                        data.label +
+                        '<br>タイプ: ' +
+                        data.type +
+                        '<br>説明: ' +
+                        data.description
+                    }
+                  })
+
+                  cy.on('mouseover', 'edge', evt => {
+                    var node = evt.target
+                    var position = evt.position
+                    var data = node.data()
+                    if (popup && position && data.id) {
+                      popup.style.display = 'block'
+                      popup.innerHTML =
+                        'インターフェスID: ' +
+                        data.label +
+                        '<br>アクセス元システム： ' +
+                        '（アクセス元システム名）' +
+                        '<br>アクセス先システム: ' +
+                        '（アクセス先システム名）'
+                    }
+                  })
+
+                  cy.on('mouseout', evt => {
+                    var popup = document.getElementById('popup')
+                    if (popup) {
+                      popup.style.display = 'none'
+                    }
+                  })
+                  cy.on('tap', 'node', evt => {
+                    var node = evt.target
+                    console.log('click!node')
+                    // console.log('EVT', evt)
+                    // console.log('EVT.cy', evt.cy)
+                    // console.log('EVT.cy._private', evt.cy._private)
+                    console.log('EVT.cy._private', evt)
+                    // console.log('cy.nodes', cy.nodes())
+                    // cy.nodes()[0].active()
+                    // console.log('TARGET', node.data())
+                    // console.log('TARGET TYPE', typeof node[0])
+                    // var png64 = cy.png()
+                    // setBase64png(png64)
+
+                    // TODO: フィルター処理実装
+                    // const filterCy = cy.filter(function (element, i) {
+                    //   // console.log('filter', element)
+                    //   return false
+                    //   // return element.isNode() && element.data('weight') > 50
+                    // })
+                    // console.log(filterCy)
+                    // cy.data(filterCy)
+
+                    // TODO: ノードに関するノード/エッジをハイライトさせたい（調べたができなさそう）
+                    // 関連要素をハイライト
+                    // 既存の選択をクリア
+                    // cy.elements().forEach(el => {
+                    //   console.log(el.classes())
+                    //   el.removeClass('highlighted')
+                    //   console.log(el.classes())
+                    // })
+                    // // タップされたノードと関連エッジ、ノードを選択状態にする
+                    // var connectedEdges = node.connectedEdges()
+                    // var connectedNodes = connectedEdges.connectedNodes()
+                    // node.addClass('highlighted')
+                    // connectedEdges.addClass('highlighted')
+                    // connectedNodes.addClass('highlighted')
+                  })
+                  cy.on('tap', 'edge', evt => {
+                    var edge = evt.target
+                    console.log('click!edge')
+                    console.log('EVT', evt)
+                    console.log('TARGET', edge.data())
+                    console.log('TARGET TYPE', typeof edge[0])
+                  })
                 }}
               />
-              <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
-                <Grid container spacing={[5, 0]}>
-                  <CytoscapeComponent
-                    elements={CytoscapeComponent.normalizeElements(graphData)}
-                    // pan={{ x: 200, y: 200 }}
-                    style={{ width: width, height: height }}
-                    zoomingEnabled={true}
-                    maxZoom={3}
-                    minZoom={0.1}
-                    autounselectify={false}
-                    boxSelectionEnabled={true}
-                    layout={layout}
-                    stylesheet={styleSheet}
-                    cy={cy => {
-                      myCyRef = cy
-                      setCy(cy)
-
-                      console.log('EVT', cy)
-                      var popup = document.getElementById('popup')
-
-                      // node,edgeを選択状態にする
-                      // // すべてのノードのIDを取得する
-                      // cy.nodes().forEach(function (node) {
-                      //   console.log(node.id())
-                      // })
-
-                      // // すべてのエッジのIDを取得する
-                      // cy.edges().forEach(function (edge) {
-                      //   console.log(edge.id())
-                      // })
-                      // cy.getElementById('s1').select()
-                      // cy.getElementById('s2').select()
-                      // cy.getElementById('s3').select()
-                      // cy.getElementById('s4').select()
-                      // 複数のノードやエッジを選択状態にする
-                      // cy.batch(function () {
-                      //   cy.getElementById('s1').select()
-                      //   cy.getElementById('s2').select()
-                      //   cy.getElementById('s3').select()
-                      //   cy.getElementById('s4').select()
-                      // })
-
-                      // cy.on('grab', 'node', function (event) {
-                      //   event.target.ungrabify()
-                      // })
-
-                      cy.nodes().forEach(function (node) {
-                        // 配置されたnode位置を取得
-                        // console.log(node.position())
-                      })
-                      const storedPositions = getStoredPositions()
-
-                      // ノードのドラッグイベントでlocalStorageを更新
-                      cy.on('dragfree', 'node', function (event) {
-                        var node = event.target
-                        storedPositions[node.id()] = node.position()
-                        storePositions(storedPositions)
-                      })
-
-                      cy.on('mouseover', 'node', evt => {
-                        // console.log('mouseover.evt', evt)
-                        // console.log('mouseover.evt.target', evt.target)
-                        var node = evt.target
-                        // console.log(node)
-                        var position = evt.position
-                        // console.log('position', position)
-                        var data = node.data()
-                        if (popup && position && data.id) {
-                          popup.style.display = 'block'
-                          // canvasの左上に付ける
-                          // popup.style.left = position.x + 200 + 'px'
-                          // popup.style.top = position.y + 50 + 'px'
-                          popup.innerHTML =
-                            'システムID: ' +
-                            data.id +
-                            '<br>システム名: ' +
-                            data.label +
-                            '<br>タイプ: ' +
-                            data.type +
-                            '<br>説明: ' +
-                            data.description
-                        }
-                      })
-
-                      cy.on('mouseover', 'edge', evt => {
-                        var node = evt.target
-                        var position = evt.position
-                        var data = node.data()
-                        if (popup && position && data.id) {
-                          popup.style.display = 'block'
-                          popup.innerHTML =
-                            'インターフェスID: ' +
-                            data.label +
-                            '<br>アクセス元システム： ' +
-                            '（アクセス元システム名）' +
-                            '<br>アクセス先システム: ' +
-                            '（アクセス先システム名）'
-                        }
-                      })
-
-                      cy.on('mouseout', evt => {
-                        var popup = document.getElementById('popup')
-                        if (popup) {
-                          popup.style.display = 'none'
-                        }
-                      })
-                      cy.on('tap', 'node', evt => {
-                        var node = evt.target
-                        console.log('click!node')
-                        // console.log('EVT', evt)
-                        // console.log('EVT.cy', evt.cy)
-                        // console.log('EVT.cy._private', evt.cy._private)
-                        console.log('EVT.cy._private', evt)
-                        // console.log('cy.nodes', cy.nodes())
-                        // cy.nodes()[0].active()
-                        // console.log('TARGET', node.data())
-                        // console.log('TARGET TYPE', typeof node[0])
-                        // var png64 = cy.png()
-                        // setBase64png(png64)
-
-                        // TODO: フィルター処理実装
-                        // const filterCy = cy.filter(function (element, i) {
-                        //   // console.log('filter', element)
-                        //   return false
-                        //   // return element.isNode() && element.data('weight') > 50
-                        // })
-                        // console.log(filterCy)
-                        // cy.data(filterCy)
-
-                        // TODO: ノードに関するノード/エッジをハイライトさせたい（調べたができなさそう）
-                        // 関連要素をハイライト
-                        // 既存の選択をクリア
-                        // cy.elements().forEach(el => {
-                        //   console.log(el.classes())
-                        //   el.removeClass('highlighted')
-                        //   console.log(el.classes())
-                        // })
-                        // // タップされたノードと関連エッジ、ノードを選択状態にする
-                        // var connectedEdges = node.connectedEdges()
-                        // var connectedNodes = connectedEdges.connectedNodes()
-                        // node.addClass('highlighted')
-                        // connectedEdges.addClass('highlighted')
-                        // connectedNodes.addClass('highlighted')
-                      })
-                      cy.on('tap', 'edge', evt => {
-                        var edge = evt.target
-                        console.log('click!edge')
-                        console.log('EVT', evt)
-                        console.log('TARGET', edge.data())
-                        console.log('TARGET TYPE', typeof edge[0])
-                      })
-                    }}
-                    abc={console.log('myCyRef', myCyRef)}
-                  />
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={6} md={6} container direction='row'>
-            <Grid item xs={12} sx={{ flex: 1, height: '50px' }}>
-              <Card>
-                <CardHeader
-                  title='システム検索条件'
-                  action={
-                    <IconButton
-                      size='small'
-                      aria-label='settings'
-                      className='card-more-options'
-                      sx={{ color: 'text.secondary' }}
-                    >
-                      {/* <DotsVertical /> */}
-                    </IconButton>
-                  }
-                  titleTypographyProps={{
-                    sx: {
-                      mb: 2.5,
-                      lineHeight: '2rem !important',
-                      letterSpacing: '0.15px !important'
-                    },
-                    alignItems: 'center'
-                  }}
-                />
-                <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
-                  <Grid container sx={{ mb: 2, justifyContent: 'space-between' }}>
-                    <Grid item xs={4} sx={{ width: '100px' }}>
-                      <Autocomplete
-                        id='combo-box-group'
-                        options={groupNodes}
-                        getOptionLabel={(option: any) => option.label}
-                        renderOption={(props, option: any) => (
-                          <li {...props} data-id={option.id} data-type='group'>
-                            {option.label}
-                          </li>
-                        )}
-                        onChange={(event, value, reason) => {
-                          // if (reason === 'clear') {
-                          filterIfs(event, 'group')
-                          // }
-                        }}
-                        sx={{ margin: '0 3px 0 0px' }}
-                        renderInput={params => <TextField {...params} label='グループ' data-type='group' />}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Autocomplete
-                        id='combo-box-system'
-                        options={systemNodes}
-                        getOptionLabel={(option: any) => option.label}
-                        renderOption={(props, option: any) => (
-                          <li {...props} data-id={option.id} data-type='system'>
-                            {option.label}
-                          </li>
-                        )}
-                        onChange={(event, value, reason) => {
-                          // if (reason === 'clear') {
-                          filterIfs(event, 'system')
-                          // }
-                        }}
-                        sx={{ margin: '0 3px 0 3px' }}
-                        renderInput={params => <TextField {...params} label='システム' />}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Autocomplete
-                        id='combo-box-app'
-                        options={appNodes}
-                        getOptionLabel={(option: any) => option.label}
-                        renderOption={(props, option: any) => (
-                          <li {...props} data-id={option.id} data-type='app'>
-                            {option.label}
-                          </li>
-                        )}
-                        onChange={(event, value, reason) => {
-                          // if (reason === 'clear') {
-                          filterIfs(event, 'app')
-                          // }
-                        }}
-                        sx={{ margin: '0 0px 0 3px' }}
-                        renderInput={params => <TextField {...params} label='アプリ' />}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid container>
-                    <Grid item xs={12}>
-                      <Autocomplete
-                        id='combo-box-if'
-                        options={ifs}
-                        sx={{ width: 'auto' }}
-                        renderInput={params => <TextField {...params} label='インターフェース' />}
-                      />
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
             </Grid>
-            <Grid item xs={12} sx={{ flex: 1 }}>
-              <Box sx={{ padding: 0, height: '100%' }}>
-                <DataTableWithFilter
-                  ifs={ifs}
-                  filterTerm={filterTerm}
-                  targetAppList={targetAppList}
-                  edges={edges}
-                  nodes={nodes}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-        </Grid>
-      </div>
+          </CardContent>
+        </Card>
+      </Grid>
     </>
   )
 }
